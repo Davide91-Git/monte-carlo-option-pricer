@@ -63,19 +63,24 @@ class TestRandomGenerator:
 
 class TestGBM:
 
+    @staticmethod
+    def _gbm_params(default_params):
+        """Extract only parameters for simulate_gbm function"""
+        return {k: v for k, v in default_params.items() if k != "K"}
+
     def test_output_shape(self, default_params, seed):
         Z = generate_standard_normals(500, 252, seed=seed)
-        S = simulate_gbm(Z=Z, **default_params)
+        S = simulate_gbm(Z=Z, **self._gbm_params(default_params))
         assert S.shape == (500, 253)
 
     def test_first_column_is_S0(self, default_params, seed):
         Z = generate_standard_normals(100, 50, seed=seed)
-        S = simulate_gbm(Z=Z, **default_params)
+        S = simulate_gbm(Z=Z, **self._gbm_params(default_params))
         np.testing.assert_array_equal(S[:, 0], default_params["S0"])
 
     def test_prices_positive(self, default_params, seed):
         Z = generate_standard_normals(1000, 252, seed=seed)
-        S = simulate_gbm(Z=Z, **default_params)
+        S = simulate_gbm(Z=Z, **self._gbm_params(default_params))
         assert np.all(S > 0)
 
     def test_mean_growth_near_drift(self, seed):
