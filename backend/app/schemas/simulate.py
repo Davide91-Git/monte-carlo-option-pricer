@@ -19,6 +19,10 @@ class PricingRequest(BaseModel):
     option_type: str = Field(..., pattern="^(call|put)$", example="call")
     option_style: str = Field(default="european", pattern="^(european|asian)$")
     antithetic: bool = Field(default=False)
+    volatility_window: str = Field(
+        default="match_maturity",
+        pattern="^(1M|3M|6M|1Y|3Y|match_maturity)$"
+    )
     sigma_override: float | None = Field(default=None, gt=0, le=3.0)
 
 
