@@ -12,7 +12,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.crud.stock import get_latest_price, compute_historical_volatility
+from app.crud.stock import get_latest_price, compute_historical_volatility, resolve_window
 from app.services.random_generator import generate_standard_normals
 from app.services.gbm import simulate_gbm
 from app.services.payoff import european_payoff, asian_payoff
@@ -43,6 +43,10 @@ async def convergence_stream(ws: WebSocket):
         if S0 is None:
             await ws.send_json({"error": f"Ticker '{ticker}' not found"})
             return
+
+        T = float(params["maturity_years"])
+        window = params.ge("volatility_window", "match_maturity")
+        window_days = resolve_window(window, T)
 
         sigma = params.get("sigma_override") or compute_historical_volatility(db, ticker)
         if sigma is None:

@@ -14,6 +14,24 @@ from sqlalchemy.orm import Session
 from app.models.stock import Stock, DailyPrice
 
 
+WINDOWS_DAYS = {
+    "1M": 21,
+    "3M": 63,
+    "6M": 126,
+    "1Y": 252,
+    "3Y": 756,
+}
+
+
+def resolve_window(window: str, maturity_years: float | None) -> int:
+    """Translate a window label into number of trading days."""
+    if window == "match_maturity":
+        if maturity_years is None:
+            return 252
+        return max(21, int(maturity_years * 252))
+    return WINDOWS_DAYS[window]
+
+
 def get_all_tickers(db: Session) -> list[dict]:
     """Return all stocks with ticker, name, and sector."""
     rows = db.query(Stock).order_by(Stock.ticker).all()

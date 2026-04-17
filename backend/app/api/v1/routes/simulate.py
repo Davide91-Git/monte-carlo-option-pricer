@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.crud.stock import get_all_tickers, get_latest_price, compute_historical_volatility
+from app.crud.stock import get_all_tickers, get_latest_price, compute_historical_volatility, resolve_window
 from app.schemas.simulate import PricingRequest, PricingResponse, TickerInfo
 from app.services.pricer import mc_price
 from app.services.payoff import european_payoff, asian_payoff
@@ -49,9 +49,13 @@ def run_pricing(req: PricingRequest, db: Session = Depends(get_db)):
     if S0 is None:
         raise HTTPException(status_code=404, detail=f"Ticker '{req.ticker}' not found")
 
-    sigma = req.sigma_override or compute_historical_volatility(db, req.ticker)
+    window_days = resolve_window(req.volatility_window, req.maturity_years)
+    sigma = req.sigma_override or compute_historical_volatility(db, req.ticker, window_days=window_days)
     if sigma is None:
-        raise HTTPException(status_code=400, detail=f"Not enough data to compute volatility for '{req.ticker}'")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Not enough data to compute volatility for '{req.ticker}'"
+        )
 
     payoff_fn = PAYOFF_MAP[req.option_style]
 
@@ -93,5 +97,7 @@ def run_pricing(req: PricingRequest, db: Session = Depends(get_db)):
             "T": req.maturity_years,
             "option_type": req.option_type,
             "option_style": req.option_style,
+            "volatility_window": req.volatility_window,
+            "window_days_used": window_days,
         },
     )
