@@ -1,0 +1,169 @@
+/* ============================================================
+   Footer.module.css — no hex, only var() tokens
+   ============================================================ */
+
+/* ── Shell ─────────────────────────────────────────────────── */
+.footer {
+  background-color: var(--footer-bg);
+  padding: 40px 24px 24px;
+  margin-top: auto;
+}
+
+/* ── Top section: brand + columns ──────────────────────────── */
+.top {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+/* ── Brand ─────────────────────────────────────────────────── */
+.brand {
+  flex-shrink: 0;
+  min-width: 160px;
+}
+
+.brandName {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--footer-text);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.brandAccent {
+  color: var(--color-gold);
+}
+
+.brandTagline {
+  font-size: var(--text-xs);
+  color: var(--footer-text-muted);
+  line-height: 1.5;
+  max-width: 180px;
+}
+
+/* ── Columns ────────────────────────────────────────────────── */
+.columns {
+  display: flex;
+  gap: 48px;
+  flex: 1;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 120px;
+}
+
+.colTitle {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--footer-text-muted);
+}
+
+.colLinks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-sm);
+  color: var(--footer-text);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--color-gold);
+  text-decoration: none;
+}
+
+.externalIcon {
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* ── Divider ────────────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background-color: var(--footer-border);
+  margin-bottom: 20px;
+}
+
+/* ── Bottom bar ─────────────────────────────────────────────── */
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.copyright {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--footer-text-muted);
+}
+
+.legalDot {
+  color: var(--footer-border);
+  font-size: var(--text-xs);
+}
+
+.disclaimer {
+  font-size: var(--text-xs);
+  color: var(--footer-text-muted);
+  font-style: italic;
+}
+
+/* ── Stack chips ────────────────────────────────────────────── */
+.stack {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--footer-text);
+  background-color: var(--footer-chip-bg);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  user-select: none;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .top {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .columns {
+    justify-content: flex-start;
+    gap: 32px;
+  }
+
+  .bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

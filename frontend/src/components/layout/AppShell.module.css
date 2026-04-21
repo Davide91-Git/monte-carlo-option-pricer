@@ -1,0 +1,64 @@
+/* ============================================================
+   AppShell.module.css
+   All color values come from semantic tokens in global.css.
+   No hex here.
+   ============================================================ */
+
+/* ── Outer shell ───────────────────────────────────────────── */
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-bg-subtle);
+}
+
+/* ── Body: sidebar + main ──────────────────────────────────── */
+.body {
+  display: flex;
+  flex: 1;
+  gap: 0;
+
+  /* Account for fixed topbar height */
+  padding-top: var(--topbar-height);
+}
+
+/* ── Sidebar ───────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+
+  /* Sticky: stays in place while main scrolls */
+  position: sticky;
+  top: var(--topbar-height);
+  height: calc(100vh - var(--topbar-height));
+  overflow-y: auto;
+}
+
+/* ── Main content ──────────────────────────────────────────── */
+.main {
+  flex: 1;
+  min-width: 0;           /* prevent flex blowout */
+  padding: 24px;
+  overflow-y: auto;
+}
+
+/* ── Responsive: collapse sidebar on narrow viewports ─────── */
+@media (max-width: 768px) {
+  .body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .main {
+    padding: 16px;
+  }
+}
