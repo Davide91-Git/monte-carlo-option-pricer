@@ -1,0 +1,332 @@
+/* ============================================================
+   global.css — MCPricer design system
+   Single source of truth for all tokens.
+   Rules:
+     • Hex values appear ONLY in the PRIMITIVES block below.
+     • Every other file references semantic tokens via var().
+     • Theme switching is handled by [data-theme="dark"] on <html>.
+   ============================================================ */
+
+/* ── Google Fonts ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ============================================================
+   1. PRIMITIVES  — hex lives here and nowhere else
+   ============================================================ */
+:root {
+  /* Neutrals */
+  --_white:        #ffffff;
+  --_gray-50:      #f9fafb;
+  --_gray-100:     #f3f4f6;
+  --_gray-200:     #e5e7eb;
+  --_gray-300:     #d1d5db;
+  --_gray-400:     #9ca3af;
+  --_gray-500:     #6b7280;
+  --_gray-600:     #4b5563;
+  --_gray-700:     #374151;
+  --_gray-800:     #1f2937;
+  --_gray-900:     #111827;
+  --_gray-950:     #030712;
+
+  /* Dark surface ramp */
+  --_dark-bg:      #0f1117;
+  --_dark-s1:      #181c27;
+  --_dark-s2:      #1f2433;
+  --_dark-border:  #2a3045;
+  --_dark-text1:   #eaedf4;
+  --_dark-text2:   #8891a8;
+  --_dark-text3:   #4e5872;
+
+  /* Blue (light-theme accent) */
+  --_blue-700:     #1d4ed8;
+  --_blue-600:     #2563eb;
+  --_blue-100:     #dbeafe;
+  --_blue-50:      #eff6ff;
+
+  /* Gold (dark-theme accent + secondary highlight) */
+  --_gold-500:     #f59e0b;
+  --_gold-600:     #d97706;
+  --_gold-400:     #fbbf24;
+  --_gold-100:     #fef3c7;
+  --_gold-50:      #fffbeb;
+  --_gold-dim:     #78450a;
+
+  /* Semantic chart colors */
+  --_green-600:    #059669;
+  --_green-400:    #34d399;
+  --_green-50:     #ecfdf5;
+  --_red-600:      #dc2626;
+  --_red-400:      #f87171;
+  --_red-50:       #fef2f2;
+  --_withe:        #ffffff;
+
+  /* Chart CI bands (rgba — only place rgba is allowed in primitives) */
+  --_blue-alpha:   rgba(29, 78, 216, 0.07);
+  --_gold-alpha:   rgba(245, 158, 11, 0.10);
+}
+
+/* ============================================================
+   2. SEMANTIC TOKENS — light theme (default)
+      Components reference ONLY these variables.
+   ============================================================ */
+:root,
+[data-theme="light"] {
+  /* Backgrounds */
+  --color-bg:            var(--_white);
+  --color-bg-subtle:     var(--_gray-50);
+  --color-surface:       var(--_white);
+  --color-surface-2:     var(--_gray-100);
+
+  /* Borders */
+  --color-border:        var(--_gray-200);
+  --color-border-strong: var(--_gray-300);
+
+  /* Text */
+  --color-text:          var(--_gray-900);
+  --color-text-secondary:var(--_gray-700);
+  --color-text-muted:    var(--_gray-500);
+  --color-text-disabled: var(--_gray-400);
+
+  /* Accent — blue in light mode */
+  --color-accent:        var(--_blue-700);
+  --color-accent-hover:  var(--_blue-600);
+  --color-accent-subtle: var(--_blue-50);
+  --color-accent-muted:  var(--_blue-100);
+
+  /* Gold — secondary accent / highlights */
+  --color-gold:          var(--_blue-700);
+  --color-gold-subtle:   var(--_gold-50);
+
+  /* Semantic states */
+  --color-positive:      var(--_green-600);
+  --color-positive-subtle: var(--_green-50);
+  --color-negative:      var(--_red-600);
+  --color-negative-subtle: var(--_red-50);
+
+  /* Chart-specific */
+  --chart-mc-line:       var(--_green-600);
+  --chart-bs-line:       var(--_blue-700);
+  --chart-ci-band:       var(--_blue-alpha);
+  --chart-grid:          var(--_gray-100);
+  --chart-bar:           var(--_blue-100);
+  --chart-bar-fill:      var(--_blue-700);
+
+  /* Topbar */
+  --topbar-bg:           var(--_white);
+  --topbar-border:       var(--_gray-200);
+  --topbar-shadow:       0 1px 3px rgba(0, 0, 0, 0.06);
+
+  /* Footer */
+  --footer-bg:           var(--_gray-100);
+  --footer-text:         var(--_gray-700);
+  --footer-text-muted:   var(--_gray-500);
+  --footer-border:       var(--_gray-200);
+  --footer-chip-bg:      var(--_gray-200);
+
+  /* Inputs */
+  --input-bg:            var(--_gray-50);
+  --input-border:        var(--_gray-200);
+  --input-text:          var(--_gray-900);
+  --input-placeholder:   var(--_gray-400);
+  --input-focus-ring:    var(--_blue-100);
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md:  0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg:  0 4px 16px rgba(0, 0, 0, 0.10);
+}
+
+/* ============================================================
+   3. DARK THEME OVERRIDES
+      Only tokens that differ from light theme.
+      Gold replaces blue as primary accent.
+   ============================================================ */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --color-bg:            var(--_dark-bg);
+  --color-bg-subtle:     var(--_dark-s1);
+  --color-surface:       var(--_dark-s1);
+  --color-surface-2:     var(--_dark-s2);
+
+  /* Borders */
+  --color-border:        var(--_dark-border);
+  --color-border-strong: var(--_dark-text3);
+
+  /* Text */
+  --color-text:          var(--_dark-text1);
+  --color-text-secondary:var(--_dark-text2);
+  --color-text-muted:    var(--_dark-text3);
+  --color-text-disabled: var(--_dark-text3);
+
+  /* Accent — gold in dark mode */
+  --color-accent:        var(--_gold-500);
+  --color-accent-hover:  var(--_gold-400);
+  --color-accent-subtle: var(--_gold-dim);
+  --color-accent-muted:  var(--_gold-100);
+
+  /* Gold keeps same role */
+  --color-gold:          var(--_gold-500);
+  --color-gold-subtle:   var(--_gold-dim);
+
+  /* Semantic states */
+  --color-positive:      var(--_green-400);
+  --color-positive-subtle: rgba(52, 211, 153, 0.10);
+  --color-negative:      var(--_red-400);
+  --color-negative-subtle: rgba(248, 113, 113, 0.10);
+
+  /* Chart-specific */
+  --chart-mc-line:       var(--_gold-500);
+  --chart-bs-line:       var(--_blue-600);
+  --chart-ci-band:       var(--_gold-alpha);
+  --chart-grid:          var(--_dark-border);
+  --chart-bar:           var(--_gold-dim);
+  --chart-bar-fill:      var(--_gold-500);
+
+  /* Topbar */
+  --topbar-bg:           var(--_dark-s1);
+  --topbar-border:       var(--_dark-border);
+  --topbar-shadow:       0 1px 3px rgba(0, 0, 0, 0.30);
+
+  /* Footer */
+  --footer-bg:           var(--_gray-950);
+  --footer-text:         var(--_dark-text2);
+  --footer-text-muted:   var(--_dark-text3);
+  --footer-border:       var(--_dark-border);
+  --footer-chip-bg:      var(--_dark-s2);
+
+  /* Inputs */
+  --input-bg:            var(--_dark-s2);
+  --input-border:        var(--_dark-border);
+  --input-text:          var(--_dark-text1);
+  --input-placeholder:   var(--_dark-text3);
+  --input-focus-ring:    var(--_gold-dim);
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-md:  0 2px 8px rgba(0, 0, 0, 0.40);
+  --shadow-lg:  0 4px 16px rgba(0, 0, 0, 0.50);
+}
+
+/* ============================================================
+   4. TYPOGRAPHY TOKENS
+   ============================================================ */
+:root {
+  --font-ui:      'Manrope', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+
+  --text-xs:   11px;
+  --text-sm:   12px;
+  --text-base: 14px;
+  --text-md:   16px;
+  --text-lg:   20px;
+  --text-xl:   24px;
+  --text-2xl:  28px;
+
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+}
+
+/* ============================================================
+   5. LAYOUT TOKENS
+   ============================================================ */
+:root {
+  --topbar-height:    56px;
+  --sidebar-width:    300px;
+  --footer-height:    auto;
+
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   10px;
+  --radius-xl:   14px;
+  --radius-full: 9999px;
+
+  --transition-fast:   120ms ease;
+  --transition-base:   200ms ease;
+  --transition-slow:   350ms ease;
+
+  --z-topbar:  100;
+  --z-dropdown: 200;
+  --z-overlay:  300;
+}
+
+/* ============================================================
+   6. RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  font-weight: var(--weight-normal);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  line-height: 1.6;
+  transition:
+    background-color var(--transition-slow),
+    color var(--transition-slow);
+}
+
+/* Smooth theme transitions on key elements */
+*, *::before, *::after {
+  transition:
+    background-color var(--transition-slow),
+    border-color var(--transition-slow),
+    color var(--transition-slow);
+}
+
+/* Override transition for elements where it would look wrong */
+input, button, select, textarea,
+[class*="chart"], [class*="canvas"] {
+  transition: none;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+button {
+  font-family: var(--font-ui);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, select, textarea {
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  color: var(--input-text);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-md);
+  outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
+}
+
+/* Number inputs — monospace by default */
+input[type="number"] {
+  font-family: var(--font-mono);
+}
+
+/* Scrollbar (webkit) */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-border-strong); }

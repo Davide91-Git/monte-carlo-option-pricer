@@ -4,7 +4,6 @@ gbm.py
 Simulates asset price paths under the risk-neutral measure
 using Geometric Brownian Motion (GBM).
 
-
 Author: Davide91-Git
 """
 
