@@ -1,65 +1,72 @@
-/* ============================================================
-   Footer.module.css — no hex, only var() tokens
-   ============================================================ */
+/* Footer.module.css */
 
-/* ── Shell ─────────────────────────────────────────────────── */
 .footer {
   background-color: var(--footer-bg);
-  padding: 40px 24px 24px;
-  margin-top: auto;
+  padding: 28px 32px 18px;
 }
 
-/* ── Top section: brand + columns ──────────────────────────── */
+/* ── Top row: brand + columns ───────────────────────────────── */
 .top {
   display: flex;
-  gap: 48px;
   align-items: flex-start;
-  margin-bottom: 32px;
+  gap: 32px;
+  margin-bottom: 24px;
 }
 
 /* ── Brand ─────────────────────────────────────────────────── */
 .brand {
   flex-shrink: 0;
-  min-width: 160px;
+  min-width: 140px;
 }
 
 .brandName {
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
   font-weight: var(--weight-bold);
   color: var(--footer-text);
   letter-spacing: -0.02em;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
-.brandAccent {
-  color: var(--color-gold);
-}
+.brandAccent { color: var(--color-gold); }
 
 .brandTagline {
   font-size: var(--text-xs);
   color: var(--footer-text-muted);
   line-height: 1.5;
-  max-width: 180px;
+  white-space: nowrap;
 }
 
-/* ── Columns ────────────────────────────────────────────────── */
+/* ── Columns ──────────────────── */
 .columns {
-  display: flex;
-  gap: 48px;
   flex: 1;
-  justify-content: flex-end;
+  display: flex;
+  justify-content: center;
+  gap: 48px;
   flex-wrap: wrap;
+}
+
+.stackCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.stackRow {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
 }
 
 .col {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-width: 120px;
+  gap: 8px;
 }
 
 .colTitle {
-  font-size: var(--text-xs);
+  font-size: 10px;
   font-weight: var(--weight-bold);
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -70,13 +77,13 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .link {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   font-size: var(--text-sm);
   color: var(--footer-text);
   text-decoration: none;
@@ -84,29 +91,46 @@
 }
 
 .link:hover {
-  color: var(--color-gold);
+  color: var(--color-accent);
   text-decoration: none;
 }
 
-.externalIcon {
-  opacity: 0.5;
-  flex-shrink: 0;
+.extIcon { opacity: 0.5; flex-shrink: 0; }
+
+/* ── Stack chips — centered row ─────────────────────────────── */
+.chipsCenter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chip {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--footer-text);
+  background-color: var(--footer-chip-bg);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  user-select: none;
 }
 
 /* ── Divider ────────────────────────────────────────────────── */
 .divider {
   height: 1px;
   background-color: var(--footer-border);
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
-/* ── Bottom bar ─────────────────────────────────────────────── */
+/* ── Bottom row ─────────────────────────────────────────────── */
 .bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 12px;
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
 .legal {
@@ -122,7 +146,7 @@
   color: var(--footer-text-muted);
 }
 
-.legalDot {
+.dot {
   color: var(--footer-border);
   font-size: var(--text-xs);
 }
@@ -133,37 +157,18 @@
   font-style: italic;
 }
 
-/* ── Stack chips ────────────────────────────────────────────── */
-.stack {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.chip {
+/* Version — no border, plain text */
+.version {
   font-size: var(--text-xs);
   font-family: var(--font-mono);
-  color: var(--footer-text);
-  background-color: var(--footer-chip-bg);
-  border-radius: var(--radius-sm);
-  padding: 3px 8px;
-  user-select: none;
+  color: var(--footer-text-muted);
+  text-align: right;
 }
 
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .top {
-    flex-direction: column;
-    gap: 32px;
-  }
-
-  .columns {
-    justify-content: flex-start;
-    gap: 32px;
-  }
-
-  .bottom {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  .top       { flex-direction: column; }
+  .columns   { justify-content: flex-start; gap: 28px; }
+  .chipsRow  { justify-content: flex-start; }
+  .bottom    { flex-direction: column; align-items: flex-start; }
 }

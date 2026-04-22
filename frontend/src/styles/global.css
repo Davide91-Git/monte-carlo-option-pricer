@@ -58,6 +58,7 @@
   --_red-600:      #dc2626;
   --_red-400:      #f87171;
   --_red-50:       #fef2f2;
+  --_withe:        #ffffff;
 
   /* Chart CI bands (rgba — only place rgba is allowed in primitives) */
   --_blue-alpha:   rgba(29, 78, 216, 0.07);
@@ -93,7 +94,7 @@
   --color-accent-muted:  var(--_blue-100);
 
   /* Gold — secondary accent / highlights */
-  --color-gold:          var(--_gold-600);
+  --color-gold:          var(--_blue-700);
   --color-gold-subtle:   var(--_gold-50);
 
   /* Semantic states */
@@ -116,11 +117,11 @@
   --topbar-shadow:       0 1px 3px rgba(0, 0, 0, 0.06);
 
   /* Footer */
-  --footer-bg:           var(--_gray-900);
-  --footer-text:         var(--_gray-400);
-  --footer-text-muted:   var(--_gray-600);
-  --footer-border:       var(--_gray-800);
-  --footer-chip-bg:      var(--_gray-800);
+  --footer-bg:           var(--_gray-100);
+  --footer-text:         var(--_gray-700);
+  --footer-text-muted:   var(--_gray-500);
+  --footer-border:       var(--_gray-200);
+  --footer-chip-bg:      var(--_gray-200);
 
   /* Inputs */
   --input-bg:            var(--_gray-50);
@@ -232,7 +233,7 @@
    ============================================================ */
 :root {
   --topbar-height:    56px;
-  --sidebar-width:    256px;
+  --sidebar-width:    300px;
   --footer-height:    auto;
 
   --radius-sm:   4px;

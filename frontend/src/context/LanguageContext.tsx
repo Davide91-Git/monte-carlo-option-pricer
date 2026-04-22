@@ -11,10 +11,9 @@
 import { createContext, useContext, useState } from 'react';
 import { en } from '../messages/en';
 import { it } from '../messages/it';
-import { de } from '../messages/de';
 import type { Messages } from '../messages/en';
 
-export type Language = 'en' | 'it' | 'de';
+export type Language = 'en' | 'it';
 
 interface LanguageContextValue {
   language:    Language;
@@ -22,14 +21,13 @@ interface LanguageContextValue {
   t:           Messages;
 }
 
-const dictionaries: Record<Language, Messages> = { en, it, de };
+const dictionaries: Record<Language, Messages> = { en, it };
 
 const STORAGE_KEY = 'mcpricer-lang';
 
 const LANGUAGE_META: Record<Language, { label: string; flag: string }> = {
   en: { label: 'English',  flag: '🇬🇧' },
   it: { label: 'Italiano', flag: '🇮🇹' },
-  de: { label: 'Deutsch',  flag: '🇩🇪' },
 };
 
 export { LANGUAGE_META };

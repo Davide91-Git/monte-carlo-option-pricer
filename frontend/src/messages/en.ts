@@ -5,16 +5,10 @@
 export const en = {
 
   app: {
-    name:        'MCPricer',
-    tagline:     'Monte Carlo Option Pricing Engine',
-    version:     'v0.1.0',
-    disclaimer:  'For educational use only — not financial advice.',
-  },
-
-  nav: {
-    pricer:  'Pricer',
-    docs:    'Docs',
-    about:   'About',
+    name:       'MCPricer',
+    tagline:    'Monte Carlo Option Pricing Engine',
+    version:    'v0.1.0',
+    disclaimer: 'For educational use only — not financial advice.',
   },
 
   theme: {
@@ -27,7 +21,21 @@ export const en = {
     label: 'Language',
     en:    'English',
     it:    'Italiano',
-    de:    'Deutsch',
+  },
+
+  /* ── Disclaimer modal — shown on first visit ── */
+  modal: {
+    title:       'Terms of Use & Disclaimer',
+    subtitle:    'Please read carefully before using MCPricer',
+    body:        'This application is built for learning and demonstration purposes only. All pricing models, simulations, and results produced by this tool are theoretical and do not constitute financial advice, investment recommendations, or solicitation of any kind.',
+    termsTitle:  'Terms of use',
+    terms: [
+      'This tool does not use real-time market data. Prices and volatility figures may be outdated.',
+      'Monte Carlo simulations are probabilistic estimates. Results carry statistical uncertainty.',
+      'The author assumes no responsibility for any decisions made based on outputs from this tool.',
+      'By proceeding, you confirm that you are using this tool solely for educational purposes.',
+    ],
+    accept: 'Accept and continue',
   },
 
   config: {
@@ -36,10 +44,9 @@ export const en = {
     stockPlaceholder:    'Select a ticker…',
     lastPrice:           'Last price',
     historicalVol:       'Historical σ',
-    optionStyle:         'Option style',
+    optionType:          'Option type',
     european:            'European',
     asian:               'Asian',
-    optionType:          'Type',
     call:                'Call',
     put:                 'Put',
     parameters:          'Parameters',
@@ -50,7 +57,6 @@ export const en = {
     riskFreeRate:        'Risk-free rate (r)',
     riskFreePlaceholder: 'e.g. 0.05',
     simulations:         'Simulations (N)',
-    steps:               'Time steps',
     volatility:          'Volatility (σ)',
     volAuto:             'Auto — historical',
     volManual:           'Manual override',
@@ -62,8 +68,7 @@ export const en = {
     volWindow1Y:         '1 year',
     volWindow3Y:         '3 years',
     antithetic:          'Antithetic variance reduction',
-    antitheticShort:     'Antithetic',
-    runButton:           'Run simulation',
+    runButton:           'Run',
     runningButton:       'Running…',
     resetButton:         'Reset',
   },
@@ -79,11 +84,6 @@ export const en = {
     paths:        'Paths',
     pathsOf:      '{n} of {total}',
     notAvailable: 'N/A',
-    european:     'European',
-    asian:        'Asian',
-    call:         'Call',
-    put:          'Put',
-    antithetic:   'Antithetic ON',
   },
 
   charts: {
@@ -103,32 +103,25 @@ export const en = {
     historyEmpty:        'Select a stock to see price history.',
     historyS0Label:      'S₀ (today)',
     historyStrikeLabel:  'Strike (K)',
-    historySigmaBand:    '±1σ band',
     historyXLabel:       'Date',
     historyYLabel:       'Price ($)',
   },
 
   progress: {
-    idle:        'Configure parameters and run a simulation.',
-    connecting:  'Connecting…',
-    running:     'Simulating {n} of {total} paths…',
-    done:        'Simulation complete.',
-    error:       'Simulation failed. Please try again.',
+    idle:       'Configure parameters and run a simulation.',
+    connecting: 'Connecting…',
+    running:    'Simulating {n} of {total} paths…',
+    done:       'Simulation complete.',
+    error:      'Simulation failed. Please try again.',
   },
 
   footer: {
-    project:       'Project',
-    github:        'GitHub',
-    documentation: 'Documentation',
-    methodology:   'Methodology',
-    engine:        'Engine',
-    european:      'European options',
-    asian:         'Asian options',
-    blackScholes:  'Black-Scholes',
-    author:        'Author',
-    linkedin:      'LinkedIn',
-    copyright:     '© {year} MCPricer',
-    disclaimer:    'For educational use only — not financial advice.',
+    project:    'Project',
+    github:     'GitHub',
+    author:     'Author',
+    linkedin:   'LinkedIn',
+    copyright:  '© {year} MCPricer',
+    disclaimer: 'For educational use only — not financial advice.',
   },
 
   errors: {
@@ -146,15 +139,12 @@ export const en = {
 
 };
 
-/* ── Type helpers ──────────────────────────────────────────────
-   DeepString converts all leaf values to `string` so that
-   translated files (it.ts, de.ts) can have different string
-   values without TypeScript complaining about literal mismatches.
-   ──────────────────────────────────────────────────────────── */
 type DeepString<T> = {
   readonly [K in keyof T]: T[K] extends string
     ? string
-    : DeepString<T[K]>;
+    : T[K] extends readonly string[]
+      ? readonly string[]
+      : DeepString<T[K]>;
 };
 
 export type Messages = DeepString<typeof en>;

@@ -2,11 +2,16 @@
    components/config/ConfigPanel.tsx
    Sidebar container. Owns the form state and passes it down
    to StockSelector and OptionForm.
-   On submit, calls onRunSimulation (wired to useConvergence
-   in PricerMain once that component exists).
+
+   CALLBACKS:
+     onRun(config)          — fired when user clicks Run
+     onConfigChange(config) — fired on every field change
+                              so AppShell always has the
+                              latest ticker/strike/window
+                              to pass to PriceHistory
    ============================================================ */
 
-import { useState } from 'react';
+import { useState }    from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import StockSelector   from './StockSelector';
 import OptionForm      from './OptionForm';
@@ -37,7 +42,7 @@ const DEFAULT_CONFIG: PricingConfig = {
   optionStyle:   'european',
   optionType:    'call',
   strike:        0,
-  maturity:      0.5,
+  maturity:      0.25,
   riskFreeRate:  0.05,
   simulations:   100_000,
   steps:         252,
@@ -48,9 +53,12 @@ const DEFAULT_CONFIG: PricingConfig = {
 };
 
 /* ── Validation ─────────────────────────────────────────────── */
-function validate(cfg: PricingConfig, t: ReturnType<typeof useLanguage>['t']): string | null {
-  if (!cfg.ticker)                              return t.errors.requiredField;
-  if (cfg.strike <= 0)                          return t.errors.invalidStrike;
+function validate(
+  cfg: PricingConfig, 
+  t: ReturnType<typeof useLanguage>['t'],
+): string | null {
+  if (!cfg.ticker) return t.errors.requiredField;
+  if (cfg.strike <= 0) return t.errors.invalidStrike;
   if (cfg.maturity < 0.01 || cfg.maturity > 10) return t.errors.invalidMaturity;
   if (cfg.riskFreeRate < 0 || cfg.riskFreeRate > 1) return t.errors.invalidRate;
   if (cfg.simulations < 1_000 || cfg.simulations > 1_000_000) return t.errors.invalidSims;
@@ -60,29 +68,51 @@ function validate(cfg: PricingConfig, t: ReturnType<typeof useLanguage>['t']): s
 /* ── Props ──────────────────────────────────────────────────── */
 interface ConfigPanelProps {
   onRun?:   (config: PricingConfig) => void;
+  onConfigChange?: (config: PricingConfig) => void;
   isRunning?: boolean;
 }
 
 /* ── Component ──────────────────────────────────────────────── */
-export default function ConfigPanel({ onRun, isRunning = false }: ConfigPanelProps) {
+export default function ConfigPanel({ 
+  onRun,
+  onConfigChange, 
+  isRunning = false 
+}: ConfigPanelProps) {
   const { t } = useLanguage();
   const [config, setConfig]   = useState<PricingConfig>(DEFAULT_CONFIG);
   const [error, setError]     = useState<string | null>(null);
 
-  function update<K extends keyof PricingConfig>(key: K, value: PricingConfig[K]) {
-    setConfig(prev => ({ ...prev, [key]: value }));
+  /* Central update — notifies parent on every change */
+  function update<K extends keyof PricingConfig>(
+    key: K, 
+    value: PricingConfig[K],
+  ): void {
+    setConfig((prev: PricingConfig) => { 
+      const next = {...prev, [key]: value };
+      onConfigChange?.(next);
+      return next;
+    });
     setError(null);
   }
 
-  function handleSubmit() {
+  function handleSubmit(): void {
     const err = validate(config, t);
     if (err) { setError(err); return; }
     onRun?.(config);
   }
 
-  function handleReset() {
+  function handleReset(): void {
     setConfig(DEFAULT_CONFIG);
+    onConfigChange?.(DEFAULT_CONFIG);
     setError(null);
+  }
+
+  function handleTickerChange(ticker: string): void {
+    update('ticker', ticker);
+  }
+
+  function handleS0Change(s0: number): void {
+    update('strike', s0)
   }
 
   return (
@@ -94,8 +124,8 @@ export default function ConfigPanel({ onRun, isRunning = false }: ConfigPanelPro
       <div className={styles.body}>
         <StockSelector
           value={config.ticker}
-          onChange={ticker => update('ticker', ticker)}
-          onS0Change={s0 => update('strike', s0)}
+          onChange={handleTickerChange}
+          onS0Change={handleS0Change}
         />
 
         <div className={styles.divider} />
@@ -123,7 +153,8 @@ export default function ConfigPanel({ onRun, isRunning = false }: ConfigPanelPro
         <button
           className={styles.runBtn}
           onClick={handleSubmit}
-          disabled={isRunning || !config.ticker}
+          disabled={isRunning || !config.ticker || config.strike < 0}
+          style={{whiteSpace: 'nowrap'}}
         >
           {isRunning ? t.config.runningButton : t.config.runButton}
         </button>

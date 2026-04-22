@@ -1,7 +1,5 @@
 /* ============================================================
    components/layout/Footer.tsx
-   Three-column link grid + bottom bar with copyright and stack.
-   All strings come from the message dictionary.
    ============================================================ */
 
 import { useLanguage } from '../../context/LanguageContext';
@@ -18,9 +16,6 @@ interface FooterColumn {
   title: string;
   links: FooterLink[];
 }
-
-/* ── Stack chips ────────────────────────────────────────────── */
-const STACK = ['FastAPI', 'React', 'PostgreSQL', 'Docker', 'WebSocket'] as const;
 
 /* ── Sub-components ─────────────────────────────────────────── */
 function FooterCol({ title, links }: FooterColumn) {
@@ -66,30 +61,22 @@ export default function Footer() {
       title: t.footer.project,
       links: [
         { label: t.footer.github,        href: 'https://github.com/Davide91-Git/monte-carlo-option-pricer', external: true },
-        { label: t.footer.documentation, href: '#docs' },
-        { label: t.footer.methodology,   href: '#methodology' },
-      ],
-    },
-    {
-      title: t.footer.engine,
-      links: [
-        { label: t.footer.european,     href: '#european' },
-        { label: t.footer.asian,        href: '#asian' },
-        { label: t.footer.blackScholes, href: '#black-scholes' },
+        { label: 'README', href: 'https://github.com/Davide91-Git/monte-carlo-option-pricer#readme', external: true },
       ],
     },
     {
       title: t.footer.author,
       links: [
         { label: 'Davide91-Git', href: 'https://github.com/Davide91-Git', external: true },
-        { label: t.footer.linkedin, href: 'https://linkedin.com', external: true },
+        { label: t.footer.linkedin, href: 'https://www.linkedin.com/in/davide-marra-347481165/', external: true },
       ],
     },
   ];
 
-  return (
+   return (
     <footer className={styles.footer} role="contentinfo">
-      {/* ── Top: brand + columns ── */}
+ 
+      {/* ── Top: brand left + columns centered ── */}
       <div className={styles.top}>
         <div className={styles.brand}>
           <div className={styles.brandName}>
@@ -103,27 +90,34 @@ export default function Footer() {
             <FooterCol key={col.title} {...col} />
           ))}
         </div>
-      </div>
 
+        <div className={styles.stackCol}>
+          <div className={styles.stackRow}>
+            <span className={styles.chip}>FastAPI</span>
+            <span className={styles.chip}>React</span>
+            <span className={styles.chip}>PostgreSQL</span>
+          </div>
+          <div className={styles.stackRow}>            
+            <span className={styles.chip}>Docker</span>
+            <span className={styles.chip}>WebSocket</span>
+          </div>
+        </div>
+      </div>
+ 
       {/* ── Divider ── */}
       <div className={styles.divider} />
-
-      {/* ── Bottom: copyright + stack ── */}
+ 
       <div className={styles.bottom}>
         <div className={styles.legal}>
           <span className={styles.copyright}>
             {t.footer.copyright.replace('{year}', String(year))}
           </span>
-          <span className={styles.legalDot}>·</span>
+          <span className={styles.dot}>·</span>
           <span className={styles.disclaimer}>{t.footer.disclaimer}</span>
         </div>
-
-        <div className={styles.stack}>
-          {STACK.map(chip => (
-            <span key={chip} className={styles.chip}>{chip}</span>
-          ))}
-        </div>
+        <span className={styles.version}>{t.app.version}</span>
       </div>
+      
     </footer>
   );
 }

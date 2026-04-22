@@ -1,9 +1,6 @@
 /* ============================================================
    components/layout/TopBar.tsx
-   Fixed top bar with:
-     • Logo + wordmark (left)
-     • Navigation links (centre)
-     • Theme toggle + language dropdown (right)
+   Fixed top bar — version tag moved to footer.
    ============================================================ */
 
 import { useState, useRef, useEffect } from 'react';
@@ -11,8 +8,6 @@ import { useTheme }    from '../../context/ThemeContext';
 import { useLanguage, LANGUAGE_META } from '../../context/LanguageContext';
 import type { Language } from '../../context/LanguageContext';
 import styles from './TopBar.module.css';
-
-/* ── Sub-components ─────────────────────────────────────────── */
 
 function Logo() {
   return (
@@ -26,7 +21,7 @@ function Logo() {
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          <circle cx="14" cy="6.5" r="1.8" fill="var(--color-gold)" />
+          <circle cx="14" cy="6.5" r="1.8" fill="var(--_white)" />
         </svg>
       </div>
       <span className={styles.logoWordmark}>
@@ -36,27 +31,9 @@ function Logo() {
   );
 }
 
-function Nav() {
-  const { t } = useLanguage();
-  return (
-    <nav className={styles.nav}>
-      <a href="#pricer" className={`${styles.navItem} ${styles.navItemActive}`}>
-        {t.nav.pricer}
-      </a>
-      <a href="#docs" className={styles.navItem}>
-        {t.nav.docs}
-      </a>
-      <a href="#about" className={styles.navItem}>
-        {t.nav.about}
-      </a>
-    </nav>
-  );
-}
-
 function ThemeToggle() {
   const { isDark, toggleTheme } = useTheme();
   const { t } = useLanguage();
-
   return (
     <button
       className={styles.themeToggle}
@@ -65,14 +42,14 @@ function ThemeToggle() {
       title={isDark ? t.theme.light : t.theme.dark}
     >
       {isDark ? (
-        /* Sun icon */
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <circle cx="12" cy="12" r="4" />
           <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
         </svg>
       ) : (
-        /* Moon icon */
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z" />
         </svg>
       )}
@@ -85,7 +62,6 @@ function LanguageDropdown() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  /* Close on outside click */
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -134,7 +110,9 @@ function LanguageDropdown() {
               <span className={styles.langFlag}>{meta.flag}</span>
               <span className={styles.langLabel}>{meta.label}</span>
               {language === code && (
-                <svg className={styles.langCheck} width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <svg className={styles.langCheck} width="12" height="12"
+                  viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round">
                   <path d="M2 6l3 3 5-5" />
                 </svg>
               )}
@@ -146,17 +124,11 @@ function LanguageDropdown() {
   );
 }
 
-/* ── Main component ─────────────────────────────────────────── */
-
 export default function TopBar() {
-  const { t } = useLanguage();
-
   return (
     <header className={styles.topbar} role="banner">
       <Logo />
-      <Nav />
       <div className={styles.controls}>
-        <span className={styles.version}>{t.app.version}</span>
         <ThemeToggle />
         <LanguageDropdown />
       </div>

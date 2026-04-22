@@ -8,6 +8,8 @@ import { useLanguage } from '../../context/LanguageContext';
 import type { PricingConfig, OptionStyle, OptionType, VolWindow } from './ConfigPanel';
 import styles from './OptionForm.module.css';
 
+import React from 'react';
+
 /* ── Reusable field wrapper ─────────────────────────────────── */
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -60,19 +62,39 @@ function NumberInput({
   max?:        number;
   step?:       number | 'any';
 }) {
+  const [raw, setRaw] = React.useState(value === '' ? '' : String(value));
+
+  /* Sync external value changes (e.g. Reset button) */
+  React.useEffect(() => {
+    setRaw(value === '' ? '' : String(value));
+  }, [value]);
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const str = e.target.value;
+    setRaw(str);
+    const n = parseFloat(str);
+    if (!isNaN(n)) onChange(n);
+  }
+
+  function handleBlur() {
+    const n = parseFloat(raw);
+    if (isNaN(n)) {
+      /* Restore last valid value on blur if field is invalid */
+      setRaw(value === '' ? '' : String(value));
+    }
+  }
+
   return (
     <input
       className={styles.input}
       type="number"
-      value={value}
+      value={raw}
       placeholder={placeholder}
       min={min}
       max={max}
       step={step}
-      onChange={e => {
-        const n = parseFloat(e.target.value);
-        if (!isNaN(n)) onChange(n);
-      }}
+      onChange={handleChange}
+      onBlur={handleBlur}
     />
   );
 }
@@ -101,6 +123,16 @@ function Toggle({
       </span>
     </button>
   );
+}
+
+function formatMaturity(years: number): string {
+  if (!years || years <= 0) return '';
+  const totalMonths = Math.round(years * 12);
+  const y = Math.floor(totalMonths / 12);
+  const m = totalMonths % 12;
+  if (y === 0) return `≈ ${m} month${m !== 1 ? 's' : ''}`;
+  if (m === 0) return `≈ ${y} year${y !== 1 ? 's' : ''}`;
+  return `≈ ${y} year${y !== 1 ? 's' : ''} ${m} month${m !== 1 ? 's' : ''}`;
 }
 
 /* ── Main component ─────────────────────────────────────────── */
@@ -134,16 +166,13 @@ export default function OptionForm({ config, onChange }: Props) {
   return (
     <div className={styles.form}>
 
-      {/* ── Style & Type ── */}
-      <Field label={t.config.optionStyle}>
+      {/* ── Type ── */}
+      <Field label={t.config.optionType}>
         <Segmented
           options={styleOptions}
           value={config.optionStyle}
           onChange={v => onChange('optionStyle', v)}
         />
-      </Field>
-
-      <Field label={t.config.optionType}>
         <Segmented
           options={typeOptions}
           value={config.optionType}
@@ -169,10 +198,15 @@ export default function OptionForm({ config, onChange }: Props) {
           value={config.maturity}
           onChange={v => onChange('maturity', v)}
           placeholder={t.config.maturityPlaceholder}
-          min={0.01}
+          min={0.00}
           max={10}
           step={0.25}
         />
+        {config.maturity > 0 && (
+          <span className={styles.maturityHint}>
+            {formatMaturity(config.maturity)}
+          </span>
+        )}
       </Field>
 
       <Field label={t.config.riskFreeRate}>
@@ -210,35 +244,37 @@ export default function OptionForm({ config, onChange }: Props) {
         />
       </Field>
 
-      {config.volMode === 'auto' && (
-        <Field label={t.config.volWindow}>
-          <select
-            className={styles.select}
-            value={config.volWindow}
-            onChange={e => onChange('volWindow', e.target.value as VolWindow)}
-          >
-            {volWindowOptions.map(opt => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-      )}
+      <div className={styles.volOverrideSlot}>
+        {config.volMode === 'auto' && (
+          <Field label={t.config.volWindow}>
+            <select
+              className={styles.select}
+              value={config.volWindow}
+              onChange={e => onChange('volWindow', e.target.value as VolWindow)}
+            >
+              {volWindowOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+        )}
 
-      {config.volMode === 'manual' && (
-        <Field label="σ (override)">
-          <NumberInput
-            value={config.sigmaOverride ?? ''}
-            onChange={v => onChange('sigmaOverride', v)}
-            placeholder="e.g. 0.23"
-            min={0.001}
-            max={5}
-            step={0.01}
-          />
-        </Field>
-      )}
-
+        {config.volMode === 'manual' && (
+          <Field label="σ (override)">
+            <NumberInput
+              value={config.sigmaOverride ?? ''}
+              onChange={v => onChange('sigmaOverride', v)}
+              placeholder="e.g. 0.23"
+              min={0.001}
+              max={5}
+              step={0.01}
+            />
+          </Field>
+        )}
+      </div>
+ 
       <div className={styles.sectionDivider} />
 
       {/* ── Variance reduction ── */}

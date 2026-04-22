@@ -21,7 +21,7 @@
 
 .body {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: hidden;
   padding: 16px 20px;
 }
 
@@ -48,11 +48,14 @@
   display: flex;
   gap: 8px;
   flex-shrink: 0;
+  align-items: center;
+  height: 68px;
 }
 
 .resetBtn {
-  flex: 0 0 auto;
-  padding: 9px 14px;
+  flex: 1;
+  width: 80px;
+  padding: 9px 0px;
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
@@ -74,7 +77,8 @@
 
 .runBtn {
   flex: 1;
-  padding: 9px 14px;
+  height: 36px;
+  padding: 0px 8px;
   font-size: var(--text-sm);
   font-weight: var(--weight-bold);
   color: var(--color-bg);
@@ -83,6 +87,9 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition:
     background-color var(--transition-fast),
     opacity var(--transition-fast);
