@@ -41,6 +41,7 @@ function resolveWindowDays(config: PricingConfig): number {
 /* ── Default config — mirrors ConfigPanel DEFAULT_CONFIG ────── */
 const DEFAULT_CONFIG: PricingConfig = {
   ticker:         '',
+  companyName:    '',
   optionStyle:    'european',
   optionType:     'call',
   strike:         0,
@@ -52,6 +53,7 @@ const DEFAULT_CONFIG: PricingConfig = {
   volWindow:      'match_maturity',
   sigmaOverride:  null,
   antithetic:     true,
+  parallel:       false,
 };
 
 /* ── Component ──────────────────────────────────────────────── */
@@ -72,6 +74,10 @@ export default function AppShell() {
   function handleConfigChange(config: PricingConfig): void {
     setLiveConfig(config)
   }
+
+  function handleReset(): void {
+    convergence.stop();
+  }
   
   return (
     <div className={styles.shell}>
@@ -82,6 +88,7 @@ export default function AppShell() {
           <ConfigPanel 
            onRun={handleRun}
            onConfigChange={handleConfigChange}
+           onReset={handleReset}
            isRunning={isRunning}
           />
         </aside>
@@ -93,6 +100,7 @@ export default function AppShell() {
             result={convergence.result}
             totalPaths={convergence.totalPaths}
             ticker={liveConfig.ticker}
+            companyName={liveConfig.companyName}
             strike={liveConfig.strike}
             windowDays={resolveWindowDays(liveConfig)}
           />

@@ -39,7 +39,7 @@ export const en = {
   },
 
   config: {
-    title:               'Configuration',
+    title:               'Run Configuration',
     stock:               'Stock',
     stockPlaceholder:    'Select a ticker…',
     lastPrice:           'Last price',
@@ -68,6 +68,7 @@ export const en = {
     volWindow1Y:         '1 year',
     volWindow3Y:         '3 years',
     antithetic:          'Antithetic variance reduction',
+    parallel:            'Parallel simulation (multi-core)',
     runButton:           'Run',
     runningButton:       'Running…',
     resetButton:         'Reset',
@@ -99,9 +100,9 @@ export const en = {
     distributionYLabel:  'Frequency',
     distributionEmpty:   'Run a simulation to see the payoff distribution.',
     historyTitle:        'Price history',
-    historySubtitle:     '{ticker} — last {days} trading days',
+    historySubtitle:     'last {days} trading days',
     historyEmpty:        'Select a stock to see price history.',
-    historyS0Label:      'S₀ (today)',
+    historyS0Label:      'S₀ (last price)',
     historyStrikeLabel:  'Strike (K)',
     historyXLabel:       'Date',
     historyYLabel:       'Price ($)',

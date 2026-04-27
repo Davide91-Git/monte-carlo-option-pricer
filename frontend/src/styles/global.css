@@ -176,7 +176,7 @@
 
   /* Chart-specific */
   --chart-mc-line:       var(--_gold-500);
-  --chart-bs-line:       var(--_blue-600);
+  --chart-bs-line:       var(--_withe);
   --chart-ci-band:       var(--_gold-alpha);
   --chart-grid:          var(--_dark-border);
   --chart-bar:           var(--_gold-dim);

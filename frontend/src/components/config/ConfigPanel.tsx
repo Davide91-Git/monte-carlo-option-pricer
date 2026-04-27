@@ -11,7 +11,7 @@
                               to pass to PriceHistory
    ============================================================ */
 
-import { useState }    from 'react';
+import { useState, useEffect }    from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import StockSelector   from './StockSelector';
 import OptionForm      from './OptionForm';
@@ -24,6 +24,7 @@ export type VolWindow   = '1M' | '3M' | '6M' | '1Y' | '3Y' | 'match_maturity';
 
 export interface PricingConfig {
   ticker:       string;
+  companyName:  string;
   optionStyle:  OptionStyle;
   optionType:   OptionType;
   strike:       number;
@@ -35,10 +36,12 @@ export interface PricingConfig {
   volWindow:    VolWindow;
   sigmaOverride: number | null;
   antithetic:   boolean;
+  parallel:     boolean;
 }
 
 const DEFAULT_CONFIG: PricingConfig = {
   ticker:        '',
+  companyName:   '',
   optionStyle:   'european',
   optionType:    'call',
   strike:        0,
@@ -50,6 +53,7 @@ const DEFAULT_CONFIG: PricingConfig = {
   volWindow:     'match_maturity',
   sigmaOverride: null,
   antithetic:    true,
+  parallel:      false,
 };
 
 /* ── Validation ─────────────────────────────────────────────── */
@@ -67,20 +71,27 @@ function validate(
 
 /* ── Props ──────────────────────────────────────────────────── */
 interface ConfigPanelProps {
-  onRun?:   (config: PricingConfig) => void;
+  onRun?: (config: PricingConfig) => void;
   onConfigChange?: (config: PricingConfig) => void;
+  onReset?: () => void;
   isRunning?: boolean;
 }
 
 /* ── Component ──────────────────────────────────────────────── */
 export default function ConfigPanel({ 
   onRun,
-  onConfigChange, 
+  onConfigChange,
+  onReset,
   isRunning = false 
 }: ConfigPanelProps) {
   const { t } = useLanguage();
   const [config, setConfig]   = useState<PricingConfig>(DEFAULT_CONFIG);
   const [error, setError]     = useState<string | null>(null);
+
+  /* Notify parent on every config change */
+  useEffect(() => {
+    onConfigChange?.(config);
+  }, [config]);
 
   /* Central update — notifies parent on every change */
   function update<K extends keyof PricingConfig>(
@@ -89,12 +100,11 @@ export default function ConfigPanel({
   ): void {
     setConfig((prev: PricingConfig) => { 
       const next = {...prev, [key]: value };
-      onConfigChange?.(next);
       return next;
     });
     setError(null);
   }
-
+  
   function handleSubmit(): void {
     const err = validate(config, t);
     if (err) { setError(err); return; }
@@ -104,11 +114,17 @@ export default function ConfigPanel({
   function handleReset(): void {
     setConfig(DEFAULT_CONFIG);
     onConfigChange?.(DEFAULT_CONFIG);
+    onReset?.();
     setError(null);
   }
 
   function handleTickerChange(ticker: string): void {
     update('ticker', ticker);
+    update('companyName', '');
+  }
+
+  function handleCompanyNameChange(name: string): void {
+  update('companyName', name);
   }
 
   function handleS0Change(s0: number): void {
@@ -126,6 +142,7 @@ export default function ConfigPanel({
           value={config.ticker}
           onChange={handleTickerChange}
           onS0Change={handleS0Change}
+          onCompanyNameChange={handleCompanyNameChange}
         />
 
         <div className={styles.divider} />

@@ -14,10 +14,6 @@
      histogram. This approximates the true distribution shape
      for near-the-money options.
 
-   FUTURE IMPROVEMENT:
-     Add a GET /api/v1/payoff-distribution endpoint that returns
-     pre-bucketed histogram data. Replace the approximation here
-     with real data. The component API (points prop) stays the same.
    ============================================================ */
 
 import {
@@ -30,8 +26,9 @@ import {
   ReferenceLine,
   ResponsiveContainer,
 } from 'recharts';
-import { useMemo }         from 'react';
-import { useLanguage }     from '../../context/LanguageContext';
+import { useState, useEffect, useMemo } from 'react';
+import { useTheme }    from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import type { ConvergencePoint } from '../../hooks/useConvergence';
 import styles from './PayoffHistogram.module.css';
 
@@ -41,8 +38,8 @@ interface Props {
 }
 
 /* ── Constants ──────────────────────────────────────────────── */
-const N_SAMPLES = 2_000;   /* synthetic samples to draw */
-const N_BINS    = 40;      /* histogram buckets          */
+const N_SAMPLES = 2_000;
+const N_BINS    = 40;
 
 /* ── Read CSS token ─────────────────────────────────────────── */
 function token(name: string): string {
@@ -53,7 +50,6 @@ function token(name: string): string {
 
 /* ── Box-Muller normal sampler ──────────────────────────────── */
 function sampleNormal(mean: number, std: number): number {
-  /* Box-Muller transform: converts two uniform samples to normal */
   const u1 = Math.random();
   const u2 = Math.random();
   const z  = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
@@ -70,18 +66,13 @@ interface Bucket {
 function buildHistogram(samples: number[]): Bucket[] {
   if (samples.length === 0) return [];
 
-  const min = Math.min(...samples);
-  const max = Math.max(...samples);
+  const min      = Math.min(...samples);
+  const max      = Math.max(...samples);
   const binWidth = (max - min) / N_BINS || 0.01;
-
-  /* Initialise empty buckets */
   const buckets: number[] = Array(N_BINS).fill(0);
 
   for (const s of samples) {
-    const idx = Math.min(
-      Math.floor((s - min) / binWidth),
-      N_BINS - 1,
-    );
+    const idx = Math.min(Math.floor((s - min) / binWidth), N_BINS - 1);
     buckets[idx]++;
   }
 
@@ -115,19 +106,40 @@ function CustomTooltip({ active, payload }: {
 
 /* ── Main component ─────────────────────────────────────────── */
 export default function PayoffHistogram({ points }: Props) {
-  const { t } = useLanguage();
+  const { t }      = useLanguage();
+  const { isDark } = useTheme();
 
-  /* Use the last (most accurate) point */
+  /* ── Theme-aware colors ───────────────────────────────────── */
+  const [colors, setColors] = useState(() => ({
+    bar:  token('--chart-bar-fill'),
+    mc:   token('--chart-mc-line'),
+    bs:   token('--chart-bs-line'),
+    grid: token('--chart-grid'),
+    text: token('--color-text-muted'),
+  }));
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setColors({
+        bar:  token('--chart-bar-fill'),
+        mc:   token('--chart-mc-line'),
+        bs:   token('--chart-bs-line'),
+        grid: token('--chart-grid'),
+        text: token('--color-text-muted'),
+      });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [isDark]);
+
+  /* ── Build histogram data ─────────────────────────────────── */
   const last = points[points.length - 1];
 
   const { data, mcPrice, bsPrice } = useMemo(() => {
     if (!last) return { data: [], mcPrice: 0, bsPrice: null };
 
-    /* Reconstruct approximate std dev of payoff from SE and N */
     const stdPayoff = last.se * Math.sqrt(last.n);
-
-    /* Draw samples, clamp to 0 (option payoffs ≥ 0) */
     const samples: number[] = [];
+
     for (let i = 0; i < N_SAMPLES; i++) {
       const s = sampleNormal(last.mcPrice, stdPayoff);
       samples.push(Math.max(0, s));
@@ -140,18 +152,8 @@ export default function PayoffHistogram({ points }: Props) {
     };
   }, [last]);
 
-  const colors = {
-    bar:  token('--chart-bar-fill'),
-    mc:   token('--chart-mc-line'),
-    bs:   token('--chart-bs-line'),
-    grid: token('--chart-grid'),
-    text: token('--color-text-muted'),
-  };
-
   if (data.length === 0) {
-    return (
-      <p className={styles.empty}>{t.charts.distributionEmpty}</p>
-    );
+    return <p className={styles.empty}>{t.charts.distributionEmpty}</p>;
   }
 
   return (
@@ -164,13 +166,10 @@ export default function PayoffHistogram({ points }: Props) {
       <ResponsiveContainer width="100%" height={240}>
         <BarChart
           data={data}
-          margin={{ top: 8, right: 16, bottom: 8, left: 8 }}
+          margin={{ top: 32, right: 16, bottom: 20, left: 8 }}
           barCategoryGap="2%"
         >
-          <CartesianGrid
-            stroke={colors.grid}
-            vertical={false}
-          />
+          <CartesianGrid stroke={colors.grid} vertical={false} />
 
           <XAxis
             dataKey="midpoint"
@@ -179,6 +178,13 @@ export default function PayoffHistogram({ points }: Props) {
             axisLine={false}
             tickFormatter={(v: number) => `$${v.toFixed(1)}`}
             interval="preserveStartEnd"
+            label={{
+              value: t.charts.distributionXLabel,
+              position: 'insideBottom',
+              offset: -2,
+              fontSize: 10,
+              fill: colors.text,
+            }}
           />
 
           <YAxis
@@ -187,7 +193,15 @@ export default function PayoffHistogram({ points }: Props) {
             axisLine={false}
             tickFormatter={(v: number) => `${v.toFixed(0)}%`}
             dataKey="pct"
-            width={40}
+            width={48}
+            label={{
+              value: t.charts.distributionYLabel,
+              angle: -90,
+              position: 'insideLeft',
+              offset: 0,
+              fontSize: 10,
+              fill: colors.text,
+            }}
           />
 
           <Tooltip content={<CustomTooltip />} cursor={{ fill: colors.grid }} />

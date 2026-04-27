@@ -30,17 +30,18 @@ class PricingResult:
 
 
 def mc_price(
-    S0: float,
-    K: float,
-    r: float,
-    sigma: float,
-    T: float,
+    S0:            float,
+    K:             float,
+    r:             float,
+    sigma:         float,
+    T:             float,
     n_simulations: int,
-    n_steps: int,
-    payoff_fn: Callable[[NDArray[np.float64], float, str], NDArray[np.float64]],
-    option_type: str,
-    antithetic: bool = False,
-    seed: int | None = None,
+    n_steps:       int,
+    payoff_fn:     Callable[[NDArray[np.float64], float, str], NDArray[np.float64]],
+    option_type:   str,
+    antithetic:    bool = False,
+    parallel:      bool = False,
+    seed:          int | None = None,
 ) -> PricingResult:
     """
     Run the full Monte Carlo pricing pipeline.
@@ -56,6 +57,7 @@ def mc_price(
         payoff_fn: Callable(S, K, option_type) → raw payoffs array.
         option_type: "call" or "put".
         antithetic: If True, use antithetic variance reduction.
+        parallel: If True, use multi-threaded Numba GBM simulation.
         seed: Random seed for reproducibility.
 
     Returns:
@@ -63,16 +65,20 @@ def mc_price(
     """
     start = time.perf_counter()
 
-    Z = generate_standard_normals(n_simulations, n_steps, antithetic=antithetic, seed=seed)
-    S = simulate_gbm(S0, r, sigma, T, Z)
-    payoffs = payoff_fn(S, K, option_type)
+    Z = generate_standard_normals(
+        n_simulations, 
+        n_steps, 
+        antithetic=antithetic, 
+        seed=seed
+    )
 
-    discount_factor = np.exp(-r * T)
-    discounted = discount_factor * payoffs
+    S = simulate_gbm(S0, r, sigma, T, Z, parallel=parallel)
+
+    payoffs = payoff_fn(S, K, option_type)
+    discounted = np.exp(-r * T) * payoffs
 
     price = float(np.mean(discounted))
     std_error = float(np.std(discounted, ddof=1) / np.sqrt(len(discounted)))
-
     elapsed = time.perf_counter() - start
 
     return PricingResult(

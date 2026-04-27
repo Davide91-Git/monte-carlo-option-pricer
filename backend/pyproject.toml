@@ -13,6 +13,7 @@ dependencies = [
     "numpy>=2.0",
     "scipy>=1.14",
     "websockets>=14.0",
+    "numba>=0.60"
 ]
 
 [project.optional-dependencies]

@@ -22,40 +22,49 @@ interface Props {
   value:      string;
   onChange:   (ticker: string) => void;
   onS0Change: (s0: number)    => void;
+  onCompanyNameChange: (name: string) => void;
 }
 
-/* ── Helpers ────────────────────────────────────────────────── */
-function fmt(n: number, decimals = 2) {
-  return n.toLocaleString('en-US', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
-}
 
 /* ── Component ──────────────────────────────────────────────── */
-export default function StockSelector({ value, onChange, onS0Change }: Props) {
+export default function StockSelector({ value, onChange, onS0Change, onCompanyNameChange }: Props) {
   const { t } = useLanguage();
   const [tickers, setTickers] = useState<TickerInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/tickers`)
-      .then(r => {
-        if (!r.ok) throw new Error('Failed to fetch tickers');
-        return r.json() as Promise<TickerInfo[]>;
-      })
-      .then(data => { setTickers(data); setLoading(false); })
-      .catch(() => { setFetchError(true); setLoading(false); });
-  }, []);
+    let attempts = 0;
+    const maxAttempts = 5;
 
-  const selected = tickers.find(t => t.ticker === value) ?? null;
+    function fetchTickers() {
+      attempts++;
+      fetch(`${import.meta.env.VITE_API_URL}/tickers`)
+        .then(r => {
+          if (!r.ok) throw new Error('Failed');
+          return r.json() as Promise<TickerInfo[]>;
+        })
+        .then(data => { setTickers(data); setLoading(false); })
+        .catch(() => {
+          if (attempts < maxAttempts) {
+            setTimeout(fetchTickers, 3000);  // riprova ogni 3 secondi
+          } else {
+            setFetchError(true);
+            setLoading(false);
+          }
+        });
+    }
+    fetchTickers();
+  }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const ticker = e.target.value;
     onChange(ticker);
     const info = tickers.find(t => t.ticker === ticker);
-    if (info) onS0Change(info.last_price);
+    if (info) {
+      onS0Change(info.last_price);
+      onCompanyNameChange(info.company_name);
+    }
   }
 
   return (
@@ -82,29 +91,6 @@ export default function StockSelector({ value, onChange, onS0Change }: Props) {
         ))}
       </select>
 
-      {/* Selected stock metadata */}
-      {selected && (
-        <div className={styles.meta}>
-          <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>{t.config.lastPrice}</span>
-            <span className={styles.metaValue}>${fmt(selected.last_price)}</span>
-          </div>
-          <div className={styles.metaDivider} />
-          <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>{t.config.historicalVol}</span>
-            <span className={styles.metaValue}>
-              {fmt(selected.historical_volatility * 100, 1)}%
-            </span>
-          </div>
-          <div className={styles.metaDivider} />
-          <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>Sector</span>
-            <span className={`${styles.metaValue} ${styles.metaSector}`}>
-              {selected.sector}
-            </span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

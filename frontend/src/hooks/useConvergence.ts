@@ -16,7 +16,6 @@ import type { PricingConfig } from '../components/config/ConfigPanel';
 
 /* ── Types ──────────────────────────────────────────────────── */
 
-/* One data point per batch received from the server */
 export interface ConvergencePoint {
   n:        number;          /* cumulative paths simulated so far */
   mcPrice:  number;          /* MC price estimate at this batch   */
@@ -67,7 +66,9 @@ export interface ConvergenceState {
 }
 
 /* ── Constants ──────────────────────────────────────────────── */
-const WS_URL = import.meta.env.VITE_WS_URL ?? 'ws://localhost:8000/api/v1/ws/convergence';
+const WS_URL = 
+  import.meta.env.VITE_WS_URL ?? 
+  'ws://localhost:8000/api/v1/ws/convergence';
 
 /* ── Hook ───────────────────────────────────────────────────── */
 export function useConvergence(): ConvergenceState {
@@ -76,16 +77,15 @@ export function useConvergence(): ConvergenceState {
   const [result, setResult]     = useState<PricingResult | null>(null);
   const [totalPaths, setTotalPaths] = useState(0);
 
-  /* Stable ref to the live WebSocket — does not cause re-renders */
+  /* Stable ref to the live WebSocket */
   const wsRef = useRef<WebSocket | null>(null);
+  
+  const isDoneRef = useRef(false);
 
-  /* ── Cleanup helper ─────────────────────────────────────────
-     Closes the socket if open and nulls the ref.
-     Called on: stop(), error, unmount.
-  ── */
+  
+  /* ── Cleanup helper ───────────────────────────────────────── */
   const closeSocket = useCallback(() => {
     if (wsRef.current) {
-      /* Only close if not already closing/closed */
       if (
         wsRef.current.readyState === WebSocket.OPEN ||
         wsRef.current.readyState === WebSocket.CONNECTING
@@ -96,20 +96,13 @@ export function useConvergence(): ConvergenceState {
     }
   }, []);
 
-  /* ── Unmount cleanup ────────────────────────────────────────
-     If the component using this hook unmounts while a
-     simulation is running, close the socket to avoid leaks.
-  ── */
+  /* ── Unmount cleanup ──────────────────────────────────────── */
   useEffect(() => {
     return () => { closeSocket(); };
   }, [closeSocket]);
 
-  /* ── run ────────────────────────────────────────────────────
-     Opens the WebSocket and starts streaming.
-     Guards against double-open (StrictMode / accidental double call).
-  ── */
+  /* ── run ──────────────────────────────────────────────────── */
   const run = useCallback((config: PricingConfig) => {
-    /* Guard: don't open if already active */
     if (status === 'connecting' || status === 'running') return;
 
     /* Reset state for a fresh simulation */
@@ -117,27 +110,29 @@ export function useConvergence(): ConvergenceState {
     setResult(null);
     setTotalPaths(config.simulations);
     setStatus('connecting');
+    isDoneRef.current = false;
 
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
 
-    /* ── onopen: connection established → send params ─────── */
+    /* ── onopen: send pricing params ─────── */
     ws.onopen = () => {
       setStatus('running');
 
       /* Build the payload matching PricingRequest on the backend */
       const payload = {
-        ticker:         config.ticker,
-        option_style:   config.optionStyle,
-        option_type:    config.optionType,
-        strike:         config.strike,
-        maturity_years: config.maturity,
-        risk_free_rate: config.riskFreeRate,
-        n_simulations:  config.simulations,
-        n_steps:        config.steps,
-        vol_window:     config.volMode === 'auto' ? config.volWindow : null,
-        sigma_override: config.volMode === 'manual' ? config.sigmaOverride : null,
-        antithetic:     config.antithetic,
+        ticker:             config.ticker,
+        option_style:       config.optionStyle,
+        option_type:        config.optionType,
+        strike:             config.strike,
+        maturity_years:     config.maturity,
+        risk_free_rate:     config.riskFreeRate,
+        n_simulations:      config.simulations,
+        n_steps:            config.steps,
+        volatility_window:  config.volMode === 'auto' ? config.volWindow : null,
+        sigma_override:     config.volMode === 'manual' ? config.sigmaOverride : null,
+        antithetic:         config.antithetic,
+        parallel:           config.parallel,
       };
 
       ws.send(JSON.stringify(payload));
@@ -170,6 +165,8 @@ export function useConvergence(): ConvergenceState {
 
       /* If this is the final batch, save the result and close */
       if (msg.done) {
+        isDoneRef.current = true
+
         setResult({
           mcPrice: msg.mc_price,
           se:      msg.std_error,
@@ -192,21 +189,23 @@ export function useConvergence(): ConvergenceState {
 
     /* ── onclose ──────────────────────────────────────────── */
     ws.onclose = (event: CloseEvent) => {
-      /* Normal closure (code 1000) after done=true is expected.
-         Any other code means something went wrong. */
-      if (event.code !== 1000 && status !== 'done') {
+      if (event.code !== 1000 && !isDoneRef.current) {
         setStatus('error');
       }
+      isDoneRef.current = false;
       wsRef.current = null;
     };
   }, [status, closeSocket]);
 
-  /* ── stop ───────────────────────────────────────────────────
-     Manual cancellation by the user.
-  ── */
+  /* ── stop ─────────────────────────────────────────────────── */
+  /*Manual cancellation by the user.*/
+  
   const stop = useCallback(() => {
     closeSocket();
     setStatus('idle');
+    setPoints([]);
+    setResult(null);
+    setTotalPaths(0);
   }, [closeSocket]);
 
   return { status, points, result, totalPaths, run, stop };

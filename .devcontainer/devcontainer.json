@@ -1,0 +1,28 @@
+{
+  "name": "MC Option Pricer — Backend",
+
+  // Connect to the running docker-compose service
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "backend",
+  "workspaceFolder": "/app",
+
+  // VS Code settings inside the container
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.analysis.extraPaths": ["/app"],
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.debugpy",
+        "ms-azuretools.vscode-containers",
+        "alexcvzz.vscode-sqlite"
+        ]
+    }
+  },
+
+  // Keep container running
+  "shutdownAction": "none"
+}

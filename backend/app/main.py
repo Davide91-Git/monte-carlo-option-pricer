@@ -9,7 +9,7 @@ Author: Davide91-Git
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1.routes import simulate, websocket
+from app.api.v1.routes import simulate, websocket, prices
 
 app = FastAPI(
     title="Monte Carlo Option Pricer",
@@ -27,3 +27,4 @@ app.add_middleware(
 
 app.include_router(simulate.router, prefix="/api/v1", tags=["pricing"])
 app.include_router(websocket.router, prefix="/api/v1", tags=["websocket"])
+app.include_router(prices.router, prefix="/api/v1", tags=["prices"])

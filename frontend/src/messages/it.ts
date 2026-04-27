@@ -40,7 +40,7 @@ export const it: Messages = {
   },
 
   config: {
-    title:               'Configurazione',
+    title:               'Configurazione Run',
     stock:               'Azione',
     stockPlaceholder:    'Seleziona un titolo…',
     lastPrice:           'Ultimo prezzo',
@@ -69,6 +69,7 @@ export const it: Messages = {
     volWindow1Y:         '1 anno',
     volWindow3Y:         '3 anni',
     antithetic:          'Riduzione varianza antitetica',
+    parallel:            'Simulazione parallela (multi-core)',
     runButton:           'Calcola',
     runningButton:       'Calcolo…',
     resetButton:         'Reimposta',
@@ -100,9 +101,9 @@ export const it: Messages = {
     distributionYLabel:  'Frequenza',
     distributionEmpty:   'Avvia una simulazione per vedere la distribuzione dei payoff.',
     historyTitle:        'Storico prezzi',
-    historySubtitle:     '{ticker} — ultimi {days} giorni di trading',
+    historySubtitle:     'ultimi {days} giorni di trading',
     historyEmpty:        'Seleziona un titolo per vedere lo storico prezzi.',
-    historyS0Label:      'S₀ (oggi)',
+    historyS0Label:      'S₀ (ultimo prezzo)',
     historyStrikeLabel:  'Strike (K)',
     historyXLabel:       'Data',
     historyYLabel:       'Prezzo ($)',

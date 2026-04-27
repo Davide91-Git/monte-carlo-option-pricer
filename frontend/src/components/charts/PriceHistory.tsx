@@ -18,7 +18,7 @@
 
 import {
   ComposedChart,
-  Line,
+  Area,
   ReferenceLine,
   ReferenceDot,
   XAxis,
@@ -27,14 +27,18 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { useMemo }         from 'react';
-import { useLanguage }     from '../../context/LanguageContext';
-import { usePriceHistory } from '../../hooks/usePriceHistory';
-import styles              from './PriceHistory.module.css';
+import { useState, useEffect } from 'react'
+import { useLanguage }         from '../../context/LanguageContext';
+import { usePriceHistory }     from '../../hooks/usePriceHistory';
+import { useTheme }            from '../../context/ThemeContext';
+import styles                  from './PriceHistory.module.css';
+
+
 
 /* ── Props ──────────────────────────────────────────────────── */
 interface Props {
   ticker:     string;
+  companyName: string;
   windowDays: number;
   strike:     number;
 }
@@ -72,17 +76,34 @@ function moneyness(s0: number, strike: number): string {
 }
 
 /* ── Main component ─────────────────────────────────────────── */
-export default function PriceHistory({ ticker, windowDays, strike }: Props) {
+export default function PriceHistory({ ticker, companyName, windowDays, strike }: Props) {
   const { t }               = useLanguage();
   const { status, history } = usePriceHistory(ticker, windowDays);
 
-  const colors = useMemo(() => ({
-    price:  token('--color-accent'),
-    strike: token('--color-gold'),
-    s0:     token('--color-positive'),
-    grid:   token('--chart-grid'),
-    text:   token('--color-text-muted'),
-  }), []);
+  const { isDark } = useTheme();
+
+const [colors, setColors] = useState(() => ({
+  price:  token('--color-accent'),
+  strike: token('--color-gold'),
+  s0:     token('--color-positive'),
+  grid:   token('--chart-grid'),
+  text:   token('--color-text-muted'),
+  fill:   token('--color-accent'),
+}));
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setColors({
+      price:  token('--color-accent'),
+      strike: token('--color-gold'),
+      s0:     token('--color-positive'),
+      grid:   token('--chart-grid'),
+      text:   token('--color-text-muted'),
+      fill:   token('--color-accent'),
+    });
+  }, 0);
+  return () => clearTimeout(timer);
+}, [isDark]);
 
   /* ── Empty / loading / error states ── */
   if (!ticker) {
@@ -116,6 +137,7 @@ export default function PriceHistory({ ticker, windowDays, strike }: Props) {
 
   /* X-axis tick every ~6 labels */
   const tickInterval = Math.max(1, Math.floor(points.length / 6));
+  const gradientId = `priceGradient-${isDark ? 'dark' : 'light'}`;
 
   return (
     <div className={styles.wrapper}>
@@ -123,10 +145,11 @@ export default function PriceHistory({ ticker, windowDays, strike }: Props) {
       {/* ── Header ── */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
-          <h3 className={styles.title}>{t.charts.historyTitle}</h3>
+          <h3 className={styles.title}>
+            {t.charts.historyTitle}- {companyName || ticker}
+          </h3>
           <span className={styles.subtitle}>
             {t.charts.historySubtitle
-              .replace('{ticker}', ticker)
               .replace('{days}', String(windowDays))}
           </span>
         </div>
@@ -134,11 +157,7 @@ export default function PriceHistory({ ticker, windowDays, strike }: Props) {
         <div className={styles.headerRight}>
           {/* σ annualised — the direct GBM parameter */}
           <div className={styles.sigmaChip}>
-            <span className={styles.sigmaLabel}>σ</span>
-            <span className={styles.sigmaValue}>
-              {(sigmaAnnual * 100).toFixed(1)}%
-            </span>
-            <span className={styles.sigmaAnn}>ann.</span>
+              σ {(sigmaAnnual * 100).toFixed(1)}% ann.
           </div>
 
           {/* ITM / OTM badge */}
@@ -159,6 +178,14 @@ export default function PriceHistory({ ticker, windowDays, strike }: Props) {
           data={points}
           margin={{ top: 8, right: 16, bottom: 8, left: 8 }}
         >
+          <defs>
+            <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%"  stopColor={colors.fill} stopOpacity={0.3} />
+              <stop offset="95%" stopColor={colors.fill} stopOpacity={0} />
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1"></linearGradient>
+            </linearGradient>
+          </defs>
+
           <CartesianGrid
             stroke={colors.grid}
             vertical={false}
@@ -171,6 +198,14 @@ export default function PriceHistory({ ticker, windowDays, strike }: Props) {
             axisLine={false}
             interval={tickInterval}
             tickFormatter={(d: string) => d.slice(5)}
+            label={{
+              value: 'Date',
+              position: 'insideBottom',
+              offset: -2,
+              fontSize: 10,
+              fill: colors.text,
+              fontFamily: 'var(--font-mono)',
+            }}
           />
 
           <YAxis
@@ -180,16 +215,26 @@ export default function PriceHistory({ ticker, windowDays, strike }: Props) {
             domain={[yMin - pad, yMax + pad]}
             tickFormatter={(v: number) => `$${v.toFixed(0)}`}
             width={52}
+             label={{
+              value: 'Price (USD)',
+              angle: -90,
+              position: 'insideLeft',
+              offset: 0,
+              fontSize: 10,
+              fill: colors.text,
+              fontFamily: 'var(--font-mono)',
+            }}
           />
 
           <Tooltip content={<CustomTooltip />} />
 
           {/* Price line */}
-          <Line
+          <Area
             type="monotone"
             dataKey="close"
             stroke={colors.price}
             strokeWidth={1.5}
+            fill={`url(#${gradientId})`}
             dot={false}
             activeDot={{ r: 3, strokeWidth: 0 }}
             isAnimationActive={false}
