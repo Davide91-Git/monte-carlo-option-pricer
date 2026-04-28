@@ -20,7 +20,7 @@
 
 Select any DJIA stock, configure strike price, maturity and option type, and watch the Monte Carlo engine simulate up to 1,000,000 price paths in real time. The convergence chart updates live via WebSocket as each batch of 5,000 paths completes. For European options, the result is validated against the closed-form Black-Scholes benchmark.
 
-**Live demo → [COMING SOON]**
+> ⚙️ To run the app locally, see the [Run locally](#run-locally) section below.
 
 ---
 
@@ -66,7 +66,7 @@ The key design principle is **strict separation of concerns**: the simulation en
 
 **Antithetic variance reduction.** For each random matrix Z, the engine also simulates −Z. The negative covariance between paired payoffs reduces estimation variance without generating additional random draws, effectively doubling the statistical efficiency of each simulation run.
 
-**Historical volatility from real data.** σ is not a user-provided constant — it is computed from the actual log-returns of the selected stock over the chosen window (default: last 252 trading days), then annualised by √252. S₀ is the most recent adjusted close price fetched from the database.
+**Historical volatility from real data.** σ is not a user-provided constant — it is computed from the actual log-returns of the selected stock over the chosen window, then annualised by √252. S₀ is the most recent adjusted close price fetched from the database.
 
 ---
 
@@ -78,19 +78,22 @@ Convergence tests run the full pipeline against the Black-Scholes analytical sol
 
 ## Run locally
 
-**Prerequisites:** Docker and Docker Compose installed.
+**Prerequisites:** [Docker](https://www.docker.com/get-started/) installed (includes Docker Compose).
 
 ```bash
-# 1. Clone and configure
+# 1. Clone the repository
 git clone https://github.com/Davide91-Git/monte-carlo-option-pricer.git
 cd monte-carlo-option-pricer
-cp .env.example .env
 
-# 2. Start all services
-make up
+# 2. Create your environment file
+cp .env.example .env        # Mac/Linux
+copy .env.example .env      # Windows
 
-# 3. Seed the database (30 DJIA constituents + historical prices)
-make seed
+# 3. Start all services
+docker compose up --build
+
+# 4. Seed the database
+docker compose exec backend python scripts/seed.py
 ```
 
 The app is available at:
