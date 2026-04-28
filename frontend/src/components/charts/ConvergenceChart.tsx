@@ -67,15 +67,23 @@ interface ChartRow {
 }
 
 /* ── Custom tooltip ─────────────────────────────────────────── */
+
+const ORDER = ['95% CI upper', 'MC price', '95% CI lower'];
+
 function CustomTooltip({ active, payload }: {
   active?:  boolean;
   payload?: { name: string; value: number; color: string }[];
 }) {
   if (!active || !payload?.length) return null;
 
+  const sorted = [...payload].sort(
+    (a, b) => ORDER.indexOf(a.name) - ORDER.indexOf(b.name)
+  );
+
   return (
     <div className={styles.tooltip}>
-      {payload.map(p => (
+      {sorted
+      .map(p => (
         p.value != null && (
           <div key={p.name} className={styles.tooltipRow}>
             <span className={styles.tooltipDot} style={{ background: p.color }} />
@@ -222,7 +230,8 @@ export default function ConvergenceChart({ points, isRunning }: Props) {
             fillOpacity={1}
             legendType="none"
             isAnimationActive={false}
-            name="ciHigh"
+            name={t.charts.ciUpper}
+            hide={false}
             tooltipType="none"
           />
           <Area
@@ -233,7 +242,7 @@ export default function ConvergenceChart({ points, isRunning }: Props) {
             fillOpacity={1}
             legendType="square"
             isAnimationActive={false}
-            name={t.charts.ciBand}
+            name={t.charts.ciLower}
           />
 
           {/* MC price line */}

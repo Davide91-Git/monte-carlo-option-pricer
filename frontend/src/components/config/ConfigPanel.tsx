@@ -121,6 +121,7 @@ export default function ConfigPanel({
   function handleTickerChange(ticker: string): void {
     update('ticker', ticker);
     update('companyName', '');
+    onReset?.();
   }
 
   function handleCompanyNameChange(name: string): void {
