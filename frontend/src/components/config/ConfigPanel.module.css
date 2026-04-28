@@ -21,7 +21,8 @@
 
 .body {
   flex: 1;
-  overflow-y: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px 20px;
 }
 

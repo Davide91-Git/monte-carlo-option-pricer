@@ -39,6 +39,7 @@ interface Props {
 
   /* Chart config — from liveConfig in AppShell */
   ticker:     string;
+  companyName: string;
   strike:     number;
   windowDays: number;
 }
@@ -95,6 +96,7 @@ export default function PricerMain({
   result, 
   totalPaths,
   ticker,
+  companyName,
   strike,
   windowDays, 
 }: Props) {
@@ -111,6 +113,7 @@ export default function PricerMain({
         <div className={styles.card}>
           <PriceHistory
             ticker={ticker}
+            companyName={companyName}
             windowDays={windowDays}
             strike={strike}
           />

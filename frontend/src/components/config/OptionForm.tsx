@@ -126,7 +126,7 @@ function Toggle({
 }
 
 function formatMaturity(years: number): string {
-  if (!years || years <= 0) return '';
+  if (!years || years <= 0) return '≈ 0 months';
   const totalMonths = Math.round(years * 12);
   const y = Math.floor(totalMonths / 12);
   const m = totalMonths % 12;
@@ -202,11 +202,9 @@ export default function OptionForm({ config, onChange }: Props) {
           max={10}
           step={0.25}
         />
-        {config.maturity > 0 && (
-          <span className={styles.maturityHint}>
-            {formatMaturity(config.maturity)}
-          </span>
-        )}
+        <span className={styles.maturityHint}>
+          {formatMaturity(config.maturity)}
+        </span>
       </Field>
 
       <Field label={t.config.riskFreeRate}>
@@ -282,6 +280,12 @@ export default function OptionForm({ config, onChange }: Props) {
         label={t.config.antithetic}
         checked={config.antithetic}
         onChange={v => onChange('antithetic', v)}
+      />
+
+      <Toggle
+        label={t.config.parallel}
+        checked={config.parallel}
+        onChange={v => onChange('parallel', v)}
       />
 
     </div>

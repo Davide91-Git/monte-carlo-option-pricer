@@ -36,8 +36,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { useMemo }         from 'react';
+import { useState, useEffect }         from 'react';
 import { useLanguage }     from '../../context/LanguageContext';
+import { useTheme }        from '../../context/ThemeContext';
 import type { ConvergencePoint } from '../../hooks/useConvergence';
 import styles from './ConvergenceChart.module.css';
 
@@ -66,15 +67,23 @@ interface ChartRow {
 }
 
 /* ── Custom tooltip ─────────────────────────────────────────── */
+
+const ORDER = ['95% CI upper', 'MC price', '95% CI lower'];
+
 function CustomTooltip({ active, payload }: {
   active?:  boolean;
   payload?: { name: string; value: number; color: string }[];
 }) {
   if (!active || !payload?.length) return null;
 
+  const sorted = [...payload].sort(
+    (a, b) => ORDER.indexOf(a.name) - ORDER.indexOf(b.name)
+  );
+
   return (
     <div className={styles.tooltip}>
-      {payload.map(p => (
+      {sorted
+      .map(p => (
         p.value != null && (
           <div key={p.name} className={styles.tooltipRow}>
             <span className={styles.tooltipDot} style={{ background: p.color }} />
@@ -88,18 +97,33 @@ function CustomTooltip({ active, payload }: {
 }
 
 /* ── Main component ─────────────────────────────────────────── */
-export default function ConvergenceChart({ points, totalPaths, isRunning }: Props) {
+export default function ConvergenceChart({ points, isRunning }: Props) {
   const { t } = useLanguage();
+  
+  const { isDark } = useTheme();
 
   /* Resolve CSS tokens once per render */
-  const colors = useMemo(() => ({
+  const [colors, setColors] = useState(() => ({
     mc:     token('--chart-mc-line'),
     bs:     token('--chart-bs-line'),
     ci:     token('--chart-ci-band'),
     grid:   token('--chart-grid'),
     text:   token('--color-text-muted'),
-  }), []);  // eslint-disable-line react-hooks/exhaustive-deps
+  })); 
   // Re-read on each render so dark/light toggle updates the chart
+
+  useEffect(() => {
+  const timer = setTimeout(() => {
+    setColors({
+      mc:   token('--chart-mc-line'),
+      bs:   token('--chart-bs-line'),
+      ci:   token('--chart-ci-band'),
+      grid: token('--chart-grid'),
+      text: token('--color-text-muted'),
+    });
+  }, 0);
+  return () => clearTimeout(timer);
+}, [isDark]);
 
   /* Transform ConvergencePoint[] into Recharts-friendly rows */
   const data: ChartRow[] = points.map(p => ({
@@ -171,6 +195,14 @@ export default function ConvergenceChart({ points, totalPaths, isRunning }: Prop
             domain={[yMin - pad, yMax + pad]}
             tickFormatter={(v: number) => `$${v.toFixed(2)}`}
             width={64}
+            label={{
+              value: t.charts.yAxisLabel,
+              angle: -90,
+              position: 'insideLeft',
+              offset: 0,
+              fontSize: 10,
+              fill: colors.text,
+            }}
           />
 
           {/* Tooltip */}
@@ -198,7 +230,8 @@ export default function ConvergenceChart({ points, totalPaths, isRunning }: Prop
             fillOpacity={1}
             legendType="none"
             isAnimationActive={false}
-            name={t.charts.ciBand}
+            name={t.charts.ciUpper}
+            hide={false}
             tooltipType="none"
           />
           <Area
@@ -209,7 +242,7 @@ export default function ConvergenceChart({ points, totalPaths, isRunning }: Prop
             fillOpacity={1}
             legendType="square"
             isAnimationActive={false}
-            name={t.charts.ciBand}
+            name={t.charts.ciLower}
           />
 
           {/* MC price line */}
