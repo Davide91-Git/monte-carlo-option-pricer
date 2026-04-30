@@ -1,6 +1,6 @@
 /* ============================================================
    components/layout/TopBar.tsx
-   Fixed top bar — version tag moved to footer.
+   Fixed top bar
    ============================================================ */
 
 import { useState, useRef, useEffect } from 'react';
@@ -26,6 +26,7 @@ function Logo() {
       </div>
       <span className={styles.logoWordmark}>
         MC<span className={styles.logoAccent}>Pricer</span>
+        <span className={styles.logoSubtitle}>Monte Carlo Option Pricing Engine</span>
       </span>
     </div>
   );

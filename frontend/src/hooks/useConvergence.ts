@@ -150,6 +150,14 @@ export function useConvergence(): ConvergenceState {
         return;
       }
 
+      /* ── Handle server-side errors ────────────────────── */      
+      if ('error' in msg) {
+        console.error('[useConvergence] Server error:', (msg as any).error);
+        setStatus('error');
+        closeSocket();
+        return;
+      }
+
       /* Convert snake_case server fields to camelCase point */
       const point: ConvergencePoint = {
         n:       msg.n,

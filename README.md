@@ -108,7 +108,7 @@ Other available commands: `make down`, `make logs`, `make migrate`, `make test`.
 ## Project structure
 
 ```
-monte-carlo-option-pricer/
+monte-carlo-option-pricer/ 
 ├── backend/
 │   ├── app/
 │   │   ├── api/v1/routes/     # HTTP + WebSocket endpoints
@@ -133,6 +133,10 @@ monte-carlo-option-pricer/
 ```
 
 ---
+
+## Documentation
+
+For the statistical methodology, formulas, and academic references, see [docs/TECHNICAL_DOC.md](docs/TECHNICAL_DOC.md).
 
 ## License
 

@@ -119,7 +119,7 @@ export const en = {
 
   footer: {
     project:    'Project',
-    github:     'GitHub',
+    github:     'GitHub Repo',
     author:     'Author',
     linkedin:   'LinkedIn',
     copyright:  '© {year} MCPricer',

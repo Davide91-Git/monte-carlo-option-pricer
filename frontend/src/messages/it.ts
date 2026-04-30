@@ -120,7 +120,7 @@ export const it: Messages = {
 
   footer: {
     project:    'Progetto',
-    github:     'GitHub',
+    github:     'GitHub Repo',
     author:     'Autore',
     linkedin:   'LinkedIn',
     copyright:  '© {year} MCPricer',

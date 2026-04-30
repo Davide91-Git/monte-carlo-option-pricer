@@ -26,7 +26,7 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-decoration: none;
   flex-shrink: 0;
 }
@@ -55,6 +55,21 @@
   color: var(--color-accent);
 }
 
+.logoText {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 80px;
+}
+
+.logoSubtitle {
+  font-size: 0.65rem;
+  font-weight: 400;
+  opacity: 0.65;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin-left: 8px;
+}
 
 /* ── Right controls ────────────────────────────────────────── */
 .controls {

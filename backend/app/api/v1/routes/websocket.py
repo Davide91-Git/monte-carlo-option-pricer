@@ -48,13 +48,14 @@ async def convergence_stream(ws: WebSocket):
         
         # ── Resolve sigma ─────────────────────────────────────
         T = float(params["maturity_years"])
-        window = params.get("volatility_window", "match_maturity")
-        window_days = resolve_window(window, T)
-        sigma = params.get("sigma_override") or compute_historical_volatility(
-            db, 
-            ticker, 
-            window_days=window_days
-        )
+        sigma_override = params.get("sigma_override")
+        
+        if sigma_override is not None:
+            sigma = float(sigma_override)
+        else:
+            window = params.get("volatility_window") or "match_maturity"
+            window_days = resolve_window(window, T)
+            sigma = compute_historical_volatility(db, ticker, window_days=window_days)
 
         if sigma is None:
             await ws.send_json({"error": f"Not enough data for '{ticker}'"})
