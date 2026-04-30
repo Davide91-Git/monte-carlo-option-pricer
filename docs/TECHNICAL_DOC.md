@@ -10,11 +10,11 @@ The engine follows the standard risk-neutral Monte Carlo framework for derivativ
 
 The underlying asset is assumed to follow a Geometric Brownian Motion (GBM) under the risk-neutral measure $\mathbb{Q}$:
 
-$$dS = r \cdot S , dt + \sigma \cdot S , dW$$
+$$dS = r \cdot S  dt + \sigma \cdot S  dW$$
 
 where $r$ is the risk-free rate, $\sigma$ is the volatility, and $dW$ is a Wiener process increment. Applying Itô's lemma to $\log(S)$ yields the exact closed-form solution between consecutive time steps:
 
-$$S(t + \Delta t) = S(t) \cdot \exp!\left(\left(r - \tfrac{1}{2}\sigma^2\right)\Delta t + \sigma\sqrt{\Delta t}, Z\right), \quad Z \sim \mathcal{N}(0,1)$$
+$$S(t + \Delta t) = S(t) \cdot \exp\left(\left(r - \tfrac{1}{2}\sigma^2\right)\Delta t + \sigma\sqrt{\Delta t}, Z\right), \quad Z \sim \mathcal{N}(0,1)$$
 
 The risk-neutral measure is used (drift $= r$, not the physical drift $\mu$) because the objective is pricing. Under $\mathbb{Q}$, the discounted expected payoff equals the fair option price.
 
@@ -26,7 +26,7 @@ The risk-neutral measure is used (drift $= r$, not the physical drift $\mu$) bec
 
 The option price is the expected discounted payoff under $\mathbb{Q}$:
 
-$$V = e^{-rT} \cdot \mathbb{E}^{\mathbb{Q}}!\left[\text{payoff}(S)\right]$$
+$$V = e^{-rT} \cdot \mathbb{E}^{\mathbb{Q}}\left[\text{payoff}(S)\right]$$
 
 The Monte Carlo estimator approximates this expectation by:
 
@@ -51,7 +51,7 @@ $$SE = \frac{s}{\sqrt{N}}$$
 
 where $s$ is the sample standard deviation of the discounted payoffs, computed with Bessel's correction (dividing by $N - 1$). The 95% confidence interval follows from the asymptotic normality of the estimator:
 
-$$CI_{95%} = \left[\hat{V}_{MC} - 1.96 \cdot SE,; \hat{V}_{MC} + 1.96 \cdot SE\right]$$
+$$CI_{95} = \left[\hat{V}_{MC} - 1.96 \cdot SE,\quad \hat{V}_{MC} + 1.96 \cdot SE\right]$$
 
 The interval narrows at a rate proportional to $1/\sqrt{N}$ — the well-known slow convergence of Monte Carlo. To halve the error, the number of simulations must be quadrupled. This $1/\sqrt{N}$ rate is the primary motivation for variance reduction techniques.
 
@@ -63,7 +63,7 @@ The interval narrows at a rate proportional to $1/\sqrt{N}$ — the well-known s
 
 For each standard normal vector $Z$, the engine also simulates $-Z$. Since $Z$ and $-Z$ share the same marginal distribution $\mathcal{N}(0,1)$ but are perfectly negatively correlated, the variance of the average payoff across the pair satisfies:
 
-$$\text{Var}!\left(\frac{X + X'}{2}\right) = \frac{\text{Var}(X) + \text{Var}(X') + 2,\text{Cov}(X, X')}{4}$$
+$$\text{Var}\left(\frac{X + X'}{2}\right) = \frac{\text{Var}(X) + \text{Var}(X') + 2,\text{Cov}(X, X')}{4}$$
 
 When $\text{Cov}(X, X') < 0$ — which holds whenever the payoff is a monotone function of $Z$, including European and Asian payoffs — the total variance is strictly lower than with $2N$ independent paths, while random-number generation cost stays at $N$ draws.
 
@@ -117,7 +117,7 @@ and $N(\cdot)$ is the standard normal CDF. This formula applies only to European
 
 When pricing with real market data, $\sigma$ is estimated from the historical daily log-returns of the underlying:
 
-$$r_t = \ln!\left(\frac{S_t}{S_{t-1}}\right)$$
+$$r_t = \ln\left(\frac{S_t}{S_{t-1}}\right)$$
 
 $$\hat{\sigma}_{\text{daily}} = \sqrt{\frac{1}{n-1}\sum_{t=1}^{n}\left(r_t - \bar{r}\right)^2}$$
 
@@ -127,7 +127,7 @@ The factor $\sqrt{252}$ annualises the daily standard deviation under the assump
 
 The estimation window is configurable. The default `match_maturity` mode sets:
 
-$$\text{window_days} = \max!\left(21,; \lfloor T \cdot 252 \rfloor\right)$$
+$$\text{window days} = \max\left(21,\; \lfloor T \cdot 252 \rfloor\right)$$
 
 aligning the volatility lookback with the option's tenor. Fixed windows of 1M, 3M, 6M, 1Y, and 3Y are also available. $S_0$ is the most recent adjusted close price stored in the database.
 
