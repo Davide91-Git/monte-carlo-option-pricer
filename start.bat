@@ -12,6 +12,11 @@ echo.
 REM ── Step 0: Crea/sovrascrive .env da .env.example ───────────
 echo  Configuring environment...
 copy /Y ".env.example" ".env" > nul
+
+REM ── Copia variabili Vite nel frontend ────────────────────────
+echo VITE_API_URL=http://localhost:8000/api/v1 > frontend\.env
+echo VITE_WS_URL=ws://localhost:8000/api/v1/ws/convergence >> frontend\.env
+
 echo  .env configured from .env.example.
 echo.
 
