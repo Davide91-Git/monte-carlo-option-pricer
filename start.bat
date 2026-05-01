@@ -12,6 +12,11 @@ echo.
 REM ── Step 0: Crea/sovrascrive .env da .env.example ───────────
 echo  Configuring environment...
 copy /Y ".env.example" ".env" > nul
+
+REM ── Copia variabili Vite nel frontend ────────────────────────
+echo VITE_API_URL=http://localhost:8000/api/v1 > frontend\.env
+echo VITE_WS_URL=ws://localhost:8000/api/v1/ws/convergence >> frontend\.env
+
 echo  .env configured from .env.example.
 echo.
 
@@ -51,7 +56,7 @@ REM ── Step 4: Frontend via Vite ──────────────�
 echo.
 echo  [4/4] Starting frontend (Vite)...
 start "MCPricer Backend Logs" cmd /k "docker compose logs -f backend"
-start "MCPricer Frontend" cmd /k "cd frontend && npm run dev"
+start "MCPricer Frontend" cmd /k "cd frontend && npm install && npm run dev"
 echo.
 echo  Services starting in separate windows:
 echo    Backend:  http://localhost:8000

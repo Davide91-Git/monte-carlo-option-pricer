@@ -100,10 +100,14 @@ start.bat
 git clone https://github.com/Davide91-Git/monte-carlo-option-pricer.git
 cd monte-carlo-option-pricer
 cp .env.example .env
+echo "VITE_API_URL=http://localhost:8000/api/v1" > frontend/.env
+echo "VITE_WS_URL=ws://localhost:8000/api/v1/ws/convergence" >> frontend/.env
 docker compose up --build -d
 docker compose exec backend python scripts/seed.py
-cd frontend && npm run dev
+cd frontend && npm install && npm run dev
 ```
+
+> ⏳ The first launch takes a few minutes — Docker will download the required images and npm will install frontend dependencies. The app will open automatically at http://localhost:5173 when ready.
 
 The app is available at:
 - Frontend → http://localhost:5173
