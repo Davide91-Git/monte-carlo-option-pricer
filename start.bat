@@ -51,7 +51,7 @@ REM ── Step 4: Frontend via Vite ──────────────�
 echo.
 echo  [4/4] Starting frontend (Vite)...
 start "MCPricer Backend Logs" cmd /k "docker compose logs -f backend"
-start "MCPricer Frontend" cmd /k "cd frontend && npm run dev"
+start "MCPricer Frontend" cmd /k "cd frontend && npm install && npm run dev"
 echo.
 echo  Services starting in separate windows:
 echo    Backend:  http://localhost:8000

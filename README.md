@@ -105,6 +105,8 @@ docker compose exec backend python scripts/seed.py
 cd frontend && npm run dev
 ```
 
+> ⏳ The first launch takes a few minutes — Docker will download the required images and npm will install frontend dependencies. The app will open automatically at http://localhost:5173 when ready.
+
 The app is available at:
 - Frontend → http://localhost:5173
 - Backend API → http://localhost:8000
