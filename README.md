@@ -1,7 +1,7 @@
 # monte-carlo-option-pricer
 
 > Production-grade Monte Carlo Option Pricing engine with real-time convergence via WebSocket.  
-> Prices European and Asian options on all 30 DJIA constituents using real market data until 31/12/2025.
+> Prices European and Asian options on 7 selected DJIA stocks using real market data until 31/12/2025.
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)
@@ -78,30 +78,37 @@ Convergence tests run the full pipeline against the Black-Scholes analytical sol
 
 ## Run locally
 
-**Prerequisites:** [Docker](https://www.docker.com/get-started/) installed (includes Docker Compose).
+> ⚠️ **Prerequisites:** [Docker Desktop](https://www.docker.com/get-started/) installed and **running**.
 
-```bash
-# 1. Clone the repository
+### Windows (recommended)
+
+Clone the repository and double-click `start.bat`. It will:
+- Configure the environment automatically
+- Start the database and backend via Docker Compose
+- Seed the database with 7 DJIA stocks and their historical prices
+- Launch the frontend
+
+```cmd
 git clone https://github.com/Davide91-Git/monte-carlo-option-pricer.git
 cd monte-carlo-option-pricer
+start.bat
+```
 
-# 2. Create your environment file
-cp .env.example .env        # Mac/Linux
-copy .env.example .env      # Windows
+### Mac / Linux
 
-# 3. Start all services
-docker compose up --build
-
-# 4. Seed the database
+```bash
+git clone https://github.com/Davide91-Git/monte-carlo-option-pricer.git
+cd monte-carlo-option-pricer
+cp .env.example .env
+docker compose up --build -d
 docker compose exec backend python scripts/seed.py
+cd frontend && npm run dev
 ```
 
 The app is available at:
 - Frontend → http://localhost:5173
 - Backend API → http://localhost:8000
 - API docs → http://localhost:8000/docs
-
-Other available commands: `make down`, `make logs`, `make migrate`, `make test`.
 
 ---
 
@@ -127,6 +134,7 @@ monte-carlo-option-pricer/
 │       └── pages/             # Route-level pages
 ├── assets/
 │   └── MCPricer.gif
+├── start.bat
 ├── docker-compose.yml
 ├── Makefile
 └── .env.example

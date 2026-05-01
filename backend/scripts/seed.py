@@ -1,8 +1,8 @@
 """
 seed.py
 -------
-One-time script to populate the database with Dow Jones Industrial Average
-constituents and their historical daily prices via Yahoo Finance.
+One-time script to populate the database with of the most important firms of 
+the Dow Jones Industrial Average and their historical daily prices via Yahoo Finance.
 
 Usage:
     docker compose exec backend python -m scripts.seed
@@ -21,12 +21,13 @@ from app.models.stock import Stock, DailyPrice
 
 # DJIA constituents as of 31/12/2025
 DJIA_TICKERS = [
-    "AAPL", "AMGN", "AMZN", "AXP", "BA",
-    "CAT", "CRM", "CSCO", "CVX", "DIS",
-    "GS", "HD", "HON", "IBM", "JNJ",
-    "JPM", "KO", "MCD", "MMM", "MRK",
-    "MSFT", "NKE", "NVDA", "PG", "SHW",
-    "TRV", "UNH", "V", "VZ", "WMT",
+    "AAPL", 
+    "BA",
+    "JNJ",
+    "JPM", 
+    "XOM", 
+    "MCD",
+    "MSFT"
 ]
 
 END_DATE = "2025-12-31"
