@@ -1,0 +1,9 @@
+# Mark frontend build artefacts and lockfiles as generated/vendored
+# so GitHub Linguist excludes them from language statistics
+frontend/dist/**             linguist-generated=true
+frontend/build/**            linguist-generated=true
+frontend/node_modules/**     linguist-vendored=true
+frontend/package-lock.json   linguist-generated=true
+frontend/yarn.lock           linguist-generated=true
+**/*.min.js                  linguist-vendored=true
+**/*.bundle.js               linguist-vendored=true

@@ -63,7 +63,7 @@ The interval narrows at a rate proportional to $1/\sqrt{N}$ — the well-known s
 
 For each standard normal vector $Z$, the engine also simulates $-Z$. Since $Z$ and $-Z$ share the same marginal distribution $\mathcal{N}(0,1)$ but are perfectly negatively correlated, the variance of the average payoff across the pair satisfies:
 
-$$\text{Var}\left(\frac{X + X'}{2}\right) = \frac{\text{Var}(X) + \text{Var}(X') + 2,\text{Cov}(X, X')}{4}$$
+$$\text{Var}\left(\frac{X + X'}{2}\right) = \frac{\text{Var}(X) + \text{Var}(X') + 2\,\text{Cov}(X, X')}{4}$$
 
 When $\text{Cov}(X, X') < 0$ — which holds whenever the payoff is a monotone function of $Z$, including European and Asian payoffs — the total variance is strictly lower than with $2N$ independent paths, while random-number generation cost stays at $N$ draws.
 
@@ -75,7 +75,7 @@ When $\text{Cov}(X, X') < 0$ — which holds whenever the payoff is a monotone f
 
 The European option payoff depends only on the terminal price $S(T)$:
 
-$$\text{Call:} \quad \max(S(T) - K,; 0)$$ $$\text{Put:} \quad \max(K - S(T),; 0)$$
+$$\text{Call:} \quad \max(S(T) - K, 0)$$ $$\text{Put:} \quad \max(K - S(T), 0)$$
 
 This payoff admits the closed-form Black-Scholes-Merton price used as analytical benchmark (see §7).
 
@@ -89,7 +89,7 @@ The fixed-strike arithmetic-average Asian payoff depends on the average price al
 
 $$\bar{S} = \frac{1}{n} \sum_{i=1}^{n} S(t_i), \quad t_i > 0 \text{ (excluding } S_0\text{)}$$
 
-$$\text{Call:} \quad \max(\bar{S} - K,; 0)$$ $$\text{Put:} \quad \max(K - \bar{S},; 0)$$
+$$\text{Call:} \quad \max(\bar{S} - K, 0)$$ $$\text{Put:} \quad \max(K - \bar{S}, 0)$$
 
 No closed-form solution exists for the arithmetic-average Asian option — this is precisely the case for which Monte Carlo is indispensable. The averaging operator dampens the variance of the effective terminal distribution, which generally makes Asian options less expensive than the corresponding European for at-the-money and out-of-the-money strikes. The relationship can reverse for deep in-the-money options or under specific parameter regimes; the engine prices each scenario directly without assuming any ordering.
 

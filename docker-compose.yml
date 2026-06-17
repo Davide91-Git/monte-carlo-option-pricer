@@ -6,6 +6,8 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+      - ./notebook:/app/notebook
+      - ./assets:/app/assets
     env_file: .env
     depends_on:
       db:
