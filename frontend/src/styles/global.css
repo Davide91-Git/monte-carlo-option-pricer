@@ -58,7 +58,7 @@
   --_red-600:      #dc2626;
   --_red-400:      #f87171;
   --_red-50:       #fef2f2;
-  --_withe:        #ffffff;
+  --_white:        #ffffff;
 
   /* Chart CI bands (rgba — only place rgba is allowed in primitives) */
   --_blue-alpha:   rgba(29, 78, 216, 0.07);
@@ -176,7 +176,7 @@
 
   /* Chart-specific */
   --chart-mc-line:       var(--_gold-500);
-  --chart-bs-line:       var(--_withe);
+  --chart-bs-line:       var(--_white);
   --chart-ci-band:       var(--_gold-alpha);
   --chart-grid:          var(--_dark-border);
   --chart-bar:           var(--_gold-dim);
