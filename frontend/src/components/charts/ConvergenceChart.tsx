@@ -107,6 +107,7 @@ export default function ConvergenceChart({ points, isRunning }: Props) {
     mc:     token('--chart-mc-line'),
     bs:     token('--chart-bs-line'),
     ci:     token('--chart-ci-band'),
+    bg:     token('--color-surface'),
     grid:   token('--chart-grid'),
     text:   token('--color-text-muted'),
   })); 
@@ -118,6 +119,7 @@ export default function ConvergenceChart({ points, isRunning }: Props) {
       mc:   token('--chart-mc-line'),
       bs:   token('--chart-bs-line'),
       ci:   token('--chart-ci-band'),
+      bg:   token('--color-surface'),
       grid: token('--chart-grid'),
       text: token('--color-text-muted'),
     });
@@ -228,9 +230,9 @@ export default function ConvergenceChart({ points, isRunning }: Props) {
             stroke="none"
             fill={colors.ci}
             fillOpacity={1}
-            legendType="none"
+            legendType="square"
             isAnimationActive={false}
-            name={t.charts.ciUpper}
+            name={t.charts.ciBand}
             hide={false}
             tooltipType="none"
           />
@@ -238,11 +240,11 @@ export default function ConvergenceChart({ points, isRunning }: Props) {
             type="monotone"
             dataKey="ciLow"
             stroke="none"
-            fill={colors.ci}
+            fill={colors.bg}
             fillOpacity={1}
-            legendType="square"
+            legendType="none"
             isAnimationActive={false}
-            name={t.charts.ciLower}
+            name={t.charts.ciBand}
           />
 
           {/* MC price line */}

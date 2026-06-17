@@ -94,6 +94,7 @@ export const en = {
     bsLine:              'B&S benchmark',
     ciUpper:             '95% CI upper', 
     ciLower:             '95% CI lower',
+    ciBand:              '95% CI',
     xAxisLabel:          'Paths (×1,000)',
     yAxisLabel:          'Option price ($)',
     distributionTitle:   'Payoff distribution',

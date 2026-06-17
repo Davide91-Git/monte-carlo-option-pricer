@@ -95,6 +95,7 @@ export const it: Messages = {
     bsLine:              'Riferimento B&S',
     ciUpper:             '95% CI upper', 
     ciLower:             '95% CI lower',
+    ciBand:              '95% CI',
     xAxisLabel:          'Simulazioni (×1.000)',
     yAxisLabel:          'Prezzo opzione ($)',
     distributionTitle:   'Distribuzione payoff',

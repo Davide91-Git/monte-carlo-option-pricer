@@ -10,11 +10,11 @@ The engine follows the standard risk-neutral Monte Carlo framework for derivativ
 
 The underlying asset is assumed to follow a Geometric Brownian Motion (GBM) under the risk-neutral measure $\mathbb{Q}$:
 
-$$dS = r \cdot S  dt + \sigma \cdot S  dW$$
+$$dS = r \cdot S\, dt + \sigma \cdot S\, dW$$
 
 where $r$ is the risk-free rate, $\sigma$ is the volatility, and $dW$ is a Wiener process increment. Applying Itô's lemma to $\log(S)$ yields the exact closed-form solution between consecutive time steps:
 
-$$S(t + \Delta t) = S(t) \cdot \exp\left(\left(r - \tfrac{1}{2}\sigma^2\right)\Delta t + \sigma\sqrt{\Delta t}, Z\right), \quad Z \sim \mathcal{N}(0,1)$$
+$$S(t + \Delta t) = S(t) \cdot \exp\left(\left(r - \tfrac{1}{2}\sigma^2\right)\Delta t + \sigma\sqrt{\Delta t}\, Z\right), \quad Z \sim \mathcal{N}(0,1)$$
 
 The risk-neutral measure is used (drift $= r$, not the physical drift $\mu$) because the objective is pricing. Under $\mathbb{Q}$, the discounted expected payoff equals the fair option price.
 
@@ -49,7 +49,7 @@ The standard error of the Monte Carlo estimate is:
 
 $$SE = \frac{s}{\sqrt{N}}$$
 
-where $s$ is the sample standard deviation of the discounted payoffs, computed with Bessel's correction (dividing by $N - 1$). The 95% confidence interval follows from the asymptotic normality of the estimator:
+where $s$ is the sample standard deviation of the discounted payoffs, computed with Bessel's correction (dividing by $N - 1$). The 95% confidence interval follows from the asymptotic normality of the estimator, a consequence of the Central Limit Theorem:
 
 $$CI_{95} = \left[\hat{V}_{MC} - 1.96 \cdot SE,\quad \hat{V}_{MC} + 1.96 \cdot SE\right]$$
 
@@ -61,11 +61,11 @@ The interval narrows at a rate proportional to $1/\sqrt{N}$ — the well-known s
 
 ## 4. Antithetic variance reduction
 
-For each standard normal vector $Z$, the engine also simulates $-Z$. Since $Z$ and $-Z$ share the same marginal distribution $\mathcal{N}(0,1)$ but are perfectly negatively correlated, the variance of the average payoff across the pair satisfies:
+For each standard normal vector $Z$, the engine also simulates $-Z$. Since $Z$ and $-Z$ share the same marginal distribution $\mathcal{N}(0,1)$, the antithetic estimator is unbiased. The variance of the average payoff across the pair is:
 
-$$\text{Var}\left(\frac{X + X'}{2}\right) = \frac{\text{Var}(X) + \text{Var}(X') + 2,\text{Cov}(X, X')}{4}$$
+$$\text{Var}\left(\frac{X + X'}{2}\right) = \frac{\text{Var}(X) + \text{Var}(X') + 2\,\text{Cov}(X, X')}{4}$$
 
-When $\text{Cov}(X, X') < 0$ — which holds whenever the payoff is a monotone function of $Z$, including European and Asian payoffs — the total variance is strictly lower than with $2N$ independent paths, while random-number generation cost stays at $N$ draws.
+where $X = h(Z)$ and $X' = h(-Z)$ are the payoffs of the two paths. When the payoff $h$ is a monotone function of each component of $Z$, the pair $(X, X')$ is negatively correlated, $\text{Cov}(X, X') \le 0$, so the total variance is no greater than that of $2N$ independent paths — while random-number generation cost stays at $N$ draws. European and Asian payoffs are monotone in the terminal and average price respectively, and both are monotone in $Z$, so the condition holds. See Boyle, Broadie & Glasserman (1997) and Glasserman (2003, §4.2) for the general treatment.
 
 **Implementation —** `services/random_generator.py`. When `antithetic=True`, the matrix is doubled via `np.vstack([Z, -Z])`, producing shape $(2N, n_\text{steps})$ from $N$ random draws.
 
@@ -75,7 +75,7 @@ When $\text{Cov}(X, X') < 0$ — which holds whenever the payoff is a monotone f
 
 The European option payoff depends only on the terminal price $S(T)$:
 
-$$\text{Call:} \quad \max(S(T) - K,; 0)$$ $$\text{Put:} \quad \max(K - S(T),; 0)$$
+$$\text{Call:} \quad \max(S(T) - K, 0)$$ $$\text{Put:} \quad \max(K - S(T), 0)$$
 
 This payoff admits the closed-form Black-Scholes-Merton price used as analytical benchmark (see §7).
 
@@ -89,9 +89,9 @@ The fixed-strike arithmetic-average Asian payoff depends on the average price al
 
 $$\bar{S} = \frac{1}{n} \sum_{i=1}^{n} S(t_i), \quad t_i > 0 \text{ (excluding } S_0\text{)}$$
 
-$$\text{Call:} \quad \max(\bar{S} - K,; 0)$$ $$\text{Put:} \quad \max(K - \bar{S},; 0)$$
+$$\text{Call:} \quad \max(\bar{S} - K, 0)$$ $$\text{Put:} \quad \max(K - \bar{S}, 0)$$
 
-No closed-form solution exists for the arithmetic-average Asian option — this is precisely the case for which Monte Carlo is indispensable. The averaging operator dampens the variance of the effective terminal distribution, which generally makes Asian options less expensive than the corresponding European for at-the-money and out-of-the-money strikes. The relationship can reverse for deep in-the-money options or under specific parameter regimes; the engine prices each scenario directly without assuming any ordering.
+No closed-form solution exists for the arithmetic-average Asian option — this is  the case for which Monte Carlo is indispensable. The averaging operator dampens the variance of the effective terminal distribution, which generally makes Asian options less expensive than the corresponding European for at-the-money and out-of-the-money strikes. The relationship can reverse for deep in-the-money options or under specific parameter regimes; the engine prices each scenario directly without assuming any ordering.
 
 **Implementation —** `services/payoff.py`, function `asian_payoff`. Computes `np.mean(S[:, 1:], axis=1)` to exclude $S_0$ from the average, then applies `_terminal_payoff`.
 
@@ -133,11 +133,58 @@ aligning the volatility lookback with the option's tenor. Fixed windows of 1M, 3
 
 **Implementation —** `crud/stock.py`, function `compute_historical_volatility`. Queries the most recent `window_days + 1` prices, computes log-returns via `np.diff(np.log(prices))`, and returns the annualised standard deviation with `np.std(log_returns, ddof=1) * np.sqrt(252)`.
 
+## 9. Numerical validation
+ 
+The methodology above is validated empirically against the Black-Scholes benchmark of §7. All results below are produced by [`notebook/convergence_study.ipynb`](../notebook/convergence_study.ipynb), which imports the same `services/` modules described in this document — the validation therefore exercises the production code path, not a separate re-implementation.
+ 
+### 9.1 Convergence to the analytical price
+ 
+The table reports the Monte Carlo price against the Black-Scholes price across 14 European scenarios spanning moneyness (ATM/ITM/OTM), option type (call/put), volatility, maturity, and the antithetic estimator. Each run uses $N = 500{,}000$ simulations with $252$ daily steps; fixed parameters are $S_0 = 100$, $r = 0.05$, $\sigma = 0.20$ (except the high-volatility scenario) and $T = 1.0$ year (except the short/long-maturity scenarios).
+ 
+| Scenario       | Type | MC Price | BS Price | Rel Err % | CI 95%             | BS in CI |
+|:---------------|:-----|---------:|---------:|----------:|:-------------------|:--------:|
+| ATM            | call | 10.4832  | 10.4506  | 0.312     | [10.442, 10.524]   | ✓        |
+| ATM            | put  |  5.5621  |  5.5735  | 0.205     | [5.538, 5.586]     | ✓        |
+| ITM            | call | 16.7441  | 16.6994  | 0.268     | [16.696, 16.792]   | ✓        |
+| ITM            | put  |  2.3108  |  2.3101  | 0.029     | [2.296, 2.326]     | ✓        |
+| OTM            | call |  6.0622  |  6.0401  | 0.366     | [6.030, 6.095]     | ✓        |
+| OTM            | put  | 10.6534  | 10.6753  | 0.205     | [10.620, 10.687]   | ✓        |
+| High vol σ=0.5 | call | 21.8825  | 21.7926  | 0.413     | [21.768, 21.997]   | ✓        |
+| High vol σ=0.5 | put  | 16.8733  | 16.9155  | 0.250     | [16.817, 16.929]   | ✓        |
+| Short T=0.1    | call |  2.7818  |  2.7737  | 0.294     | [2.771, 2.793]     | ✓        |
+| Short T=0.1    | put  |  2.2702  |  2.2749  | 0.206     | [2.261, 2.280]     | ✓        |
+| Long T=3.0     | call | 20.9933  | 20.9244  | 0.330     | [20.912, 21.074]   | ✓        |
+| Long T=3.0     | put  |  6.9810  |  6.9952  | 0.203     | [6.949, 7.013]     | ✓        |
+| Antithetic     | call |  8.0272  |  8.0214  | 0.073     | [8.001, 8.053]     | ✓        |
+| Antithetic     | put  |  7.9016  |  7.9004  | 0.015     | [7.881, 7.922]     | ✓        |
+ 
+Across all 14 scenarios the relative error stays below 1% (maximum 0.413%), and the Black-Scholes price lies inside the Monte Carlo 95% confidence interval in every case. The two antithetic scenarios show errors an order of magnitude smaller than the standard-sampling rows, consistent with the variance reduction analysed in §9.3.
+ 
+### 9.2 Convergence rate
+ 
+![Convergence rate](../assets/convergence_log_log.png)
+ 
+Fitting the standard error against $N$ in log-log scale gives an empirical slope of $-0.50$, matching the $1/\sqrt{N}$ rate predicted in §3. The dotted reference line overlays the standard-error curve. The absolute error of a single seed (blue) fluctuates around this envelope rather than decreasing monotonically, since for a fixed realisation the error is itself a random quantity — the $1/\sqrt{N}$ law governs the standard error, not any individual run.
+ 
+### 9.3 Antithetic variance reduction
+ 
+![Antithetic comparison](../assets/antithetic_comparison.png)
+ 
+At every $N$ the antithetic standard error lies below the standard one, and the two curves are parallel in log-log scale (same $1/\sqrt{N}$ rate, smaller constant). The measured variance reduction is approximately 50% across the tested range, obtained without additional random draws — the empirical counterpart of the argument in §4.
+ 
+### 9.4 Asian vs European
+ 
+![Asian vs European](../assets/asian_vs_european.png)
+ 
+Priced across strikes, the Asian call lies below the European call at every $K$, with the gap widening out-of-the-money. This matches §6: averaging over the path concentrates the effective terminal distribution, and out-of-the-money payoffs depend on the right tail that averaging suppresses.
+ 
 ----------
+
 
 ## References
 
 -   **Black, F., and Scholes, M.** (1973). The Pricing of Options and Corporate Liabilities. _Journal of Political Economy_, 81(3), 637–654.
 -   **Boyle, P. P.** (1977). Options: A Monte Carlo Approach. _Journal of Financial Economics_, 4(3), 323–338.
+-   **Boyle, P. P., Broadie, M., and Glasserman, P.** (1997). Monte Carlo Methods for Security Pricing. *Journal of Economic Dynamics and Control*, 21(8–9), 1267–1321.
 -   **Glasserman, P.** (2003). _Monte Carlo Methods in Financial Engineering_. Springer-Verlag, New York.
 -   **Hull, J. C.** (2017). _Options, Futures, and Other Derivatives_ (10th ed.). Pearson.
