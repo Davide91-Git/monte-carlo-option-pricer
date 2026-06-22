@@ -47,7 +47,7 @@ const DEFAULT_CONFIG: PricingConfig = {
   strike:        0,
   maturity:      0.25,
   riskFreeRate:  0.05,
-  simulations:   100_000,
+  simulations:   50_000,
   steps:         252,
   volMode:       'auto',
   volWindow:     'match_maturity',
@@ -65,7 +65,7 @@ function validate(
   if (cfg.strike <= 0) return t.errors.invalidStrike;
   if (cfg.maturity < 0.01 || cfg.maturity > 10) return t.errors.invalidMaturity;
   if (cfg.riskFreeRate < 0 || cfg.riskFreeRate > 1) return t.errors.invalidRate;
-  if (cfg.simulations < 1_000 || cfg.simulations > 1_000_000) return t.errors.invalidSims;
+  if (cfg.simulations < 1_000 || cfg.simulations > 200_000) return t.errors.invalidSims;
   return null;
 }
 

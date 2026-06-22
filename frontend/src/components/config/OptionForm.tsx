@@ -223,7 +223,7 @@ export default function OptionForm({ config, onChange }: Props) {
           value={config.simulations}
           onChange={v => onChange('simulations', Math.round(v))}
           min={1_000}
-          max={1_000_000}
+          max={200_000}
           step={10_000}
         />
       </Field>
