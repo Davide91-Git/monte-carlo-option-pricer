@@ -9,6 +9,7 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-HuggingFace-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/spaces/dmarra91/monte-carlo-option-pricer)
 ![CI](https://github.com/Davide91-Git/monte-carlo-option-pricer/actions/workflows/ci.yml/badge.svg)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -26,6 +27,8 @@ Select a stock, configure strike price, maturity and option type, and watch the 
 The convergence chart updates live via WebSocket as each batch of 5,000 paths completes.
 
 > ⚙️ To run the app locally, see the [Run locally](#run-locally) section below.
+
+> 🔗 **Live demo (capped at 200k paths on free tier):** [huggingface.co/spaces/dmarra91/monte-carlo-option-pricer](https://huggingface.co/spaces/dmarra91/monte-carlo-option-pricer)
 
 ---
 
